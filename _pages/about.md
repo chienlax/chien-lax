@@ -1,15 +1,19 @@
 ---
 layout: single
-title: "About Me"
+title: "about me"
 permalink: /about/
 author_profile: true
 ---
 
-Hello! I'm **Quang Chien**, and this is my personal website.
-
-I am setting this up to explore the web, document my projects, and test my new **Catppuccin** light/dark mode configuration.
+Hello! I'm **Quang Chien** (i call myself david when i have conversation with myself in my head), and this is my personal website (yay).
 
 ### My Interests
-- Web setup
-- Optimization
-- Beautiful UI features
+- Research
+- Music
+- Mental Illnesses
+- (Consumer) Technology (mostly phones)
+- Philosophy
+- Neuroscience
+- Psychology
+- Fandom Culture
+- Photography (i used to dream to be a photographer, but that part of me died several years ago)

@@ -1,24 +1,13 @@
 ---
 layout: single
-title:  "Welcome to My Site!"
-date:   2026-04-15 20:20:00 +0700
+title:  "welcome to my site! (or not)"
+date:   2026-04-15 +0700
 categories: [blog]
 tags: [update, personal]
 ---
 
-Welcome to my new personal website hosted on GitHub Pages!
+i have no idea what i am doing here, but i have to have something to show my work and document my research process, so here we are. also, expect some thoughts about current technology landscape, philosophy?, social commentary, media, and whatever i hyperfixate on then get bored of it.
 
-This site runs on [Jekyll](https://jekyllrb.com/) using the [Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/) theme. We've customized it with a beautiful **Catppuccin Peach** light and dark theme toggle.
+my interests are: technology (i've been following consumer technology, especially smartphone since 2014-ish), academia (operation research and related stuffs), music (my music journey starts with sohyang, mariah carey, then to billie eilish and currently obssessed with phung khanh linh), social media (i have no idea, maybe if something pop off my head then i'll write about it), fandom culture (i love ao3, it is my lifeline), and health? (i have several medical conditions that can borderline kill me but i'm working to resolve them, so maybe i can add deferring death as another job title?)
 
-### Some Code
-
-Here's an example of how code blocks look in this theme:
-
-```javascript
-const themeCSS = "Peach";
-console.log(`Setting theme accent color to ${themeCSS}`);
-```
-
-### Try it out!
-
-Click the moon 🌙 or sun ☀️ icon in the top right to switch between the Catppuccin Latte and Catppuccin Mocha skins seamlessly!
+anyway, whatever, i WILL be cringed reading this many years later down the line, my frontal lobe hasn't fully developed btw, so i'm cringed, but i'm free.
