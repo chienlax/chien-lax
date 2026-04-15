@@ -26,7 +26,7 @@ url                      : "https://chienlax.github.io" # the base hostname & pr
 baseurl                  : "/chien-lax" # the subpath of your site, e.g. "/blog"
 repository               : "chienlax/chien-lax" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-logo                     : "/assets/images/bio-photo.JPG"
+logo                     : "/assets/images/blog-photo.JPG"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 breadcrumbs              : # true, false (default)
 words_per_minute         : 150
@@ -118,12 +118,12 @@ author:
   avatar           :  "/assets/images/bio-photo.JPG"
   bio              : "wannabe researcher, i am trying my best tho."
   location         : "Ha Noi, Viet Nam"
-  email            :  # "chienlax.work@gmail.com"
+  email            :  "chienlax.work@gmail.com"
   # fediverse      : "@you@instance.social"  # used for fediverse:creator meta tag
   links:
     - label: "Email"
       icon: "fas fa-fw fa-square-envelope"
-      url: "chienlax.work@gmail.com"
+      url:   # "chienlax.work@gmail.com"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       # url: "https://your-website.com"
