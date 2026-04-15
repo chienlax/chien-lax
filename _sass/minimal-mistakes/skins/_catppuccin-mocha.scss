@@ -1,0 +1,30 @@
+/* ==========================================================================
+   Catppuccin Mocha (Dark) skin
+   ========================================================================== */
+
+/* Colors */
+$background-color: #1e1e2e !default;
+$text-color: #cdd6f4 !default;
+$primary-color: #fab387 !default; // Peach accent
+$border-color: mix(#313244, $background-color, 50%) !default;
+$code-background-color: #181825 !default;
+$code-background-color-dark: #11111b !default;
+$form-background-color: #181825 !default;
+$footer-background-color: #181825 !default;
+$link-color: $primary-color !default;
+$link-color-hover: mix(#fff, $link-color, 25%) !default;
+$link-color-visited: mix(#cdd6f4, $link-color, 25%) !default;
+$masthead-link-color: $text-color !default;
+$masthead-link-color-hover: $primary-color !default;
+$navicon-link-color-hover: mix(#cdd6f4, $background-color, 30%) !default;
+
+.author__urls.social-icons i,
+.author__urls.social-icons .svg-inline--fa,
+.page__footer-follow .social-icons i,
+.page__footer-follow .social-icons .svg-inline--fa  {
+  color: inherit;
+}
+
+.ais-search-box .ais-search-box--input {
+  background-color: $form-background-color;
+}
