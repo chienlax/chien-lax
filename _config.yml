@@ -20,7 +20,7 @@ rtl                      : # true, false (default) # turns direction of the page
 title                    : "Quang Chien"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
-name                     : "Quang Chien"
+name                     : "sleeping, on the go"
 description              : "Personal website of Quang Chien."
 url                      : "https://chienlax.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "/chien-lax" # the subpath of your site, e.g. "/blog"
@@ -115,15 +115,15 @@ analytics:
 # Site Author
 author:
   name             : "Quang Chien"
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Exploring the web, documenting projects."
-  location         : 
-  email            :
+  avatar           :  "/assets/images/bio-photo.JPG"
+  bio              : "wannabe researcher, i am trying my best tho."
+  location         : "Ha Noi, Viet Nam"
+  email            :  "chienlax.work@gmail.com"
   # fediverse      : "@you@instance.social"  # used for fediverse:creator meta tag
   links:
     - label: "Email"
       icon: "fas fa-fw fa-square-envelope"
-      # url: "mailto:your.name@email.com"
+      url: "chienlax.work@gmail.com"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       # url: "https://your-website.com"
