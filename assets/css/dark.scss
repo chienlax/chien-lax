@@ -7,3 +7,13 @@ search: false
 
 @import "minimal-mistakes/skins/catppuccin-mocha"; // dark mode skin
 @import "minimal-mistakes"; // main partials
+
+.page__title {
+  font-size: calc(1.563em + 4px);
+}
+
+.page__content {
+  font-size: 0.875em;
+}
+
+

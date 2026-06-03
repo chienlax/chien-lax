@@ -151,5 +151,5 @@ defaults:
       layout: single
       author_profile: true
       read_time: true
-      share: true
-      related: true
+      share: false
+      related: false
