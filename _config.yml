@@ -10,7 +10,7 @@ description              : "Personal website of Quang Chien."
 url                      : "https://chienlax.github.io"
 baseurl                  : "/chien-lax"
 repository               : "chienlax/chien-lax"
-teaser                   : "/assets/images/blog-photo.png"
+teaser                   : "/assets/images/blog-photo.JPG"
 logo                     : "/assets/images/blog-photo.JPG"
 words_per_minute         : 150
 
