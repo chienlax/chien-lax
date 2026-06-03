@@ -1,0 +1,6 @@
+<link id="dark-mode-stylesheet" rel="stylesheet" href="{{ '/assets/css/dark.css' | relative_url }}" disabled>
+<script>
+  if (localStorage.getItem('theme') === 'dark') {
+    document.getElementById('dark-mode-stylesheet').removeAttribute('disabled');
+  }
+</script>

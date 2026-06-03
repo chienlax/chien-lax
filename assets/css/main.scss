@@ -6,6 +6,8 @@ search: false
 @charset "utf-8";
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+$right-sidebar-width-narrow: 150px;
+$right-sidebar-width: 200px;
 @import "minimal-mistakes"; // main partials
 
 .page__title {
@@ -14,6 +16,24 @@ search: false
 
 .page__content {
   font-size: 0.875em;
+}
+
+// Use full sidebar allocation width so content starts flush against the sidebar (no 1em gap)
+@include breakpoint($large) {
+  .sidebar {
+    width: $right-sidebar-width-narrow;
+  }
+}
+@include breakpoint($x-large) {
+  .sidebar {
+    width: $right-sidebar-width;
+  }
+}
+
+// Allow long sidebar text (email, URLs) to wrap instead of creating a horizontal scrollbar
+.author__urls li {
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 

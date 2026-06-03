@@ -6,6 +6,8 @@ search: false
 @charset "utf-8";
 
 @import "minimal-mistakes/skins/catppuccin-mocha"; // dark mode skin
+$right-sidebar-width-narrow: 150px;
+$right-sidebar-width: 200px;
 @import "minimal-mistakes"; // main partials
 
 .page__title {
@@ -14,6 +16,22 @@ search: false
 
 .page__content {
   font-size: 0.875em;
+}
+
+@include breakpoint($large) {
+  .sidebar {
+    width: $right-sidebar-width-narrow;
+  }
+}
+@include breakpoint($x-large) {
+  .sidebar {
+    width: $right-sidebar-width;
+  }
+}
+
+.author__urls li {
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 
