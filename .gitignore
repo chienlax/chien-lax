@@ -1,25 +1,11 @@
-# Vim
-*~
-*.sw[p_]
-
-# IntelliJ IDEA
-*.idea
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
 # Ruby Gem
 *.gem
 .bundle
 Gemfile.lock
 **/vendor/bundle
 
-# Node.js and NPM
+# Node.js
 node_modules
-npm-debug.log*
-package-lock.json
-codekit-config.json
 
 # macOS
 .DS_Store
