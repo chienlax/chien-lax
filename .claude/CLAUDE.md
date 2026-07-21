@@ -21,12 +21,16 @@ bundle exec jekyll build
 
 The site is served at `http://localhost:4000/chien-lax/` by default.
 
+## Git
+
+When I ask you to commit and push changes to the remote, NEVER add a "Co-authored-by" line to the commit message.
+
 ## Architecture
 
 - `_config.yml` — site-wide settings, active skin (`minimal_mistakes_skin`), plugins, author profile
 - `_posts/` — blog posts, named `YYYY-MM-DD-title.md` with YAML front matter (`layout`, `title`, `date`, `categories`, `tags`)
 - `_pages/` — static pages (e.g. `about.md`); added to navigation via `_data/navigation.yml`
-- `_sass/minimal-mistakes/skins/` — custom Catppuccin theme skins (`_catppuccin_latte.scss`, `_catppuccin_mocha.scss`); active skin is set in `_config.yml` under `minimal_mistakes_skin`
+- `_sass/minimal-mistakes/skins/` — custom Catppuccin theme skins (`_catppuccin-latte.scss`, `_catppuccin-mocha.scss`); active skin is set in `_config.yml` under `minimal_mistakes_skin`
 - `_includes/` — Liquid template overrides for the theme (see below)
 - `assets/images/` — static images
 

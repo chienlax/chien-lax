@@ -1,0 +1,7 @@
+{
+  "spinnerTipsEnabled": false,
+  "outputStyle": "Direct",
+  "env": {
+    "CLAUDE_CODE_ENABLE_TASKS": "1"
+  }
+}
