@@ -36,7 +36,7 @@ When I ask you to commit and push changes to the remote, NEVER add a "Co-authore
 - `_pages/` — static pages (`about.md`); linked from `_data/navigation.yml`
 - `_layouts/` — the three layouts described below
 - `assets/css/`, `assets/js/`, `assets/fonts/` — see "Styling" below
-- `assets/images/` — post images
+- `assets/images/` — post images. WebP, quality 85, at most 1460px wide, which is 2x the 730px reading column. An image renders at the column width, never past it. Convert with `uv run --with pillow python` — the shell has no ImageMagick.
 
 ### Layouts
 

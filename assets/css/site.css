@@ -130,11 +130,9 @@
    code inside .code-block. Kramdown emits none of those wrappers, so the
    bare elements get the same treatment here, from the same tokens. */
 
-/* An image paragraph reaches past the reading measure, the way a figure
-   does. The kit's .breakout uses width:fit-content, which fights an
-   img with max-width:100%; a plain max-width does the same job here. */
+/* An image stays inside the reading measure. The wrapping paragraph keeps the
+   730px cap from .doc > *, and the image scales down to it. */
 .doc > p:has(> img) {
-  max-width: min(var(--breakout-w), 92vw);
   margin-top: 2.5rem;
   margin-bottom: 2.5rem;
 }
