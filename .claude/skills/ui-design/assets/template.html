@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+
+<!-- Resolve the theme before first paint. Without this the page flashes
+     light before the stored dark choice applies. -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('ui-design-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.3.0/index.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.3.0/500.css" rel="stylesheet">
+
+<!-- Syntax colours. The theme module enables exactly one of these. -->
+<link id="hljs-light" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css">
+<link id="hljs-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github-dark.min.css" disabled>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  darkMode: ['selector', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        bg:            'rgb(var(--bg) / <alpha-value>)',
+        tint:          'rgb(var(--bg-tint) / <alpha-value>)',
+        surface:       'rgb(var(--surface) / <alpha-value>)',
+        'surface-2':   'rgb(var(--surface-2) / <alpha-value>)',
+        content:       'rgb(var(--text) / <alpha-value>)',
+        muted:         'rgb(var(--text-muted) / <alpha-value>)',
+        line:          'rgb(var(--border) / <alpha-value>)',
+        'line-subtle': 'rgb(var(--border-subtle) / <alpha-value>)',
+        accent:        'rgb(var(--accent) / <alpha-value>)',
+        'accent-hover':'rgb(var(--accent-hover) / <alpha-value>)',
+        success:       'rgb(var(--success) / <alpha-value>)',
+        warning:       'rgb(var(--warning) / <alpha-value>)',
+        danger:        'rgb(var(--danger) / <alpha-value>)',
+        data1:         'rgb(var(--data-1) / <alpha-value>)',
+        data2:         'rgb(var(--data-2) / <alpha-value>)',
+        data3:         'rgb(var(--data-3) / <alpha-value>)',
+        data4:         'rgb(var(--data-4) / <alpha-value>)',
+        data5:         'rgb(var(--data-5) / <alpha-value>)',
+        data6:         'rgb(var(--data-6) / <alpha-value>)'
+      },
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        mono: ['Monaspace Neon', 'SF Mono', 'Menlo', 'Consolas', 'monospace']
+      },
+      maxWidth: { prose: '730px', breakout: '980px' },
+      borderRadius: { xl: '16px', '2xl': '20px' }
+    }
+  }
+}
+</script>
+
+<!-- Math. The converter pulls every $...$ span out before the markdown parse,
+     so the LaTeX reaches the page intact and auto-render turns it into KaTeX. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<!-- ── header ─────────────────────────────────────────────────────── -->
+<header class="glass-header">
+  <div class="glass-header__inner">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <button class="icon-btn toc-toggle" type="button" data-toc-toggle aria-expanded="false" aria-label="Show contents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h10"/>
+        </svg>
+      </button>
+      <a class="glass-header__brand" href="#top">{{BRAND}}</a>
+    </div>
+
+    <nav class="glass-header__nav" aria-label="Sections">
+      {{HEADER_NAV}}
+    </nav>
+
+    <div class="glass-header__actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch theme" aria-pressed="false">
+        <svg data-icon-moon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg data-icon-sun viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="progress-bar" data-progress role="presentation"></div>
+
+<!-- ── contents rail ──────────────────────────────────────────────── -->
+<aside class="toc scroll-hidden" data-toc aria-label="Table of contents">
+  <div class="toc__label">On this page</div>
+  <div data-toc-body></div>
+</aside>
+
+<!-- ── hero ───────────────────────────────────────────────────────── -->
+<div id="top"></div>
+<section class="hero">
+  <div class="prose-col">
+    <p class="hero__eyebrow">{{EYEBROW}}</p>
+    <h1 class="hero__title">{{TITLE}}</h1>
+    <p class="hero__dek">{{DEK}}</p>
+    <div class="hero__rule"></div>
+    <div class="hero__meta">
+      {{META_CHIPS}}
+    </div>
+  </div>
+</section>
+
+<!-- ── content ────────────────────────────────────────────────────── -->
+<main id="content">
+  <article class="doc" data-toc-root>
+    {{CONTENT}}
+  </article>
+  {{FOOTNOTES}}
+</main>
+
+<button class="to-top" type="button" data-to-top aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<div class="toast" data-toast role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+  <span data-toast-text></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
+<script src="./script.js"></script>
+
+<!-- Mermaid, themed from the same tokens and re-rendered on a switch. -->
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+const css = (name) => {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v ? `rgb(${v})` : '#888';
+};
+
+function config() {
+  return {
+    startOnLoad: false,
+    securityLevel: 'strict',
+    fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans'),
+    theme: 'base',
+    // Natural size, then scaled down by CSS if it exceeds the figure. With
+    // useMaxWidth the diagram stretches and its labels shrink to unreadable.
+    flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis', padding: 16 },
+    sequence: { useMaxWidth: false, boxMargin: 12 },
+    gantt: { useMaxWidth: false },
+    journey: { useMaxWidth: false },
+    pie: { useMaxWidth: false },
+    class: { useMaxWidth: false },
+    state: { useMaxWidth: false },
+    er: { useMaxWidth: false },
+    mindmap: { useMaxWidth: false },
+    timeline: { useMaxWidth: false },
+    themeVariables: {
+      background: css('--bg'),
+      primaryColor: css('--surface'),
+      primaryTextColor: css('--text'),
+      primaryBorderColor: css('--border'),
+      secondaryColor: css('--surface-2'),
+      tertiaryColor: css('--bg-tint'),
+      lineColor: css('--text-muted'),
+      textColor: css('--text'),
+      mainBkg: css('--surface'),
+      nodeBorder: css('--border'),
+      clusterBkg: css('--bg-tint'),
+      clusterBorder: css('--border-subtle'),
+      titleColor: css('--text'),
+      // --surface, not --bg: a diagram sits inside a figure card, so an edge
+      // label painted with the page background shows as a box against it.
+      edgeLabelBackground: css('--surface'),
+      pie1: css('--data-1'), pie2: css('--data-2'), pie3: css('--data-3'),
+      pie4: css('--data-4'), pie5: css('--data-5'), pie6: css('--data-6'),
+      cScale0: css('--data-1'), cScale1: css('--data-2'), cScale2: css('--data-3'),
+      actorBkg: css('--surface'), actorBorder: css('--border'), actorTextColor: css('--text'),
+      signalColor: css('--text-muted'), signalTextColor: css('--text'),
+      labelBoxBkgColor: css('--surface'), labelTextColor: css('--text'),
+      noteBkgColor: css('--bg-tint'), noteTextColor: css('--text'), noteBorderColor: css('--border'),
+      taskBkgColor: css('--data-1'), taskTextColor: css('--text'),
+      gridColor: css('--border-subtle'), sectionBkgColor: css('--bg-tint')
+    }
+  };
+}
+
+async function draw() {
+  const blocks = document.querySelectorAll('pre.mermaid, div.mermaid');
+  if (!blocks.length) return;
+  blocks.forEach((b) => {
+    if (!b.dataset.src) b.dataset.src = b.textContent.trim();
+    b.textContent = b.dataset.src;
+    b.removeAttribute('data-processed');
+  });
+  mermaid.initialize(config());
+  await mermaid.run({ nodes: blocks });
+}
+
+draw();
+document.addEventListener('themechange', draw);
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.renderMathInElement) return;
+  // The whole body, not just the article: a heading with math also reaches the
+  // contents rail, and the rail is built before this runs.
+  window.renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    ignoredClasses: ['mermaid', 'chart'],
+    throwOnError: false
+  });
+});
+</script>
+
+<script src="https://unpkg.com/lucide@0.454.0"></script>
+<script>if (window.lucide) window.lucide.createIcons();</script>
+{{SCRIPTS}}
+</body>
+</html>

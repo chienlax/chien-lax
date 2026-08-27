@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Creator Studio gets smarter, faster, and more connected - Apple</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            bg: '#000000',
+                            card: '#1d1d1f',
+                            cardHover: '#2d2d2f',
+                            textPrimary: '#f5f5f7',
+                            textSecondary: '#86868b',
+                            blue: '#2997ff',
+                            blueHover: '#0077ed',
+                            border: '#333336'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Apple Aesthetics & Scrollbars */
+        body {
+            background-color: #000000;
+            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Reading Progress Bar */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #2997ff, #30d158);
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Glassmorphism Navigation Header */
+        .apple-nav {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom footnote highlight effect */
+        .footnote-target {
+            animation: highlight 2s ease-out;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(41, 151, 255, 0.3); }
+            100% { background-color: transparent; }
+        }
+
+        /* Mockup Glass Reflections */
+        .mockup-screen {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mockup-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: skewX(-25deg);
+            pointer-events: none;
+        }
+
+        /* Custom Toast Notification */
+        .toast {
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-black text-[#f5f5f7] min-h-screen flex flex-col selection:bg-[#2997ff] selection:text-white">
+
+    <!-- Scroll Progress Indicator -->
+    <div id="progress-bar"></div>
+
+    <!-- Apple Global Navigation Header -->
+    <header class="apple-nav fixed top-0 left-0 right-0 z-50 h-[44px] flex items-center text-xs tracking-tight text-[#f5f5f7]/80">
+        <div class="max-w-[1024px] w-full mx-auto px-4 flex justify-between items-center h-full font-normal">
+            <!-- Apple Logo -->
+            <a href="#" class="hover:text-white transition-colors" aria-label="Apple">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 170 170">
+                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                </svg>
+            </a>
+            <!-- Links (Hidden on small mobile) -->
+            <div class="hidden md:flex items-center space-x-7 text-[#cccccc]">
+                <a href="#" class="hover:text-white transition-colors">Store</a>
+                <a href="#" class="hover:text-white transition-colors">Mac</a>
+                <a href="#" class="hover:text-white transition-colors">iPad</a>
+                <a href="#" class="hover:text-white transition-colors">iPhone</a>
+                <a href="#" class="hover:text-white transition-colors">Watch</a>
+                <a href="#" class="hover:text-white transition-colors">Vision</a>
+                <a href="#" class="hover:text-white transition-colors">AirPods</a>
+                <a href="#" class="hover:text-white transition-colors">TV & Home</a>
+                <a href="#" class="hover:text-white transition-colors">Entertainment</a>
+                <a href="#" class="hover:text-white transition-colors">Accessories</a>
+                <a href="#" class="hover:text-white transition-colors">Support</a>
+            </div>
+            <!-- Search & Bag Icons -->
+            <div class="flex items-center space-x-5 text-[#cccccc]">
+                <button id="search-btn" class="hover:text-white transition-colors" aria-label="Search">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+                <button class="hover:text-white transition-colors" aria-label="Shopping Bag">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Overlay Container -->
+    <div id="search-bar" class="hidden fixed top-[44px] left-0 right-0 bg-[#161617] border-b border-[#333] p-4 z-40">
+        <div class="max-w-[680px] mx-auto flex items-center bg-[#2d2d2d] rounded-lg px-3 py-1.5">
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+            <input type="text" id="search-input" placeholder="Search press releases or updates..." class="bg-transparent text-white text-sm w-full outline-none">
+            <button id="close-search" class="text-xs text-gray-400 hover:text-white ml-2">Cancel</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow pt-[80px] pb-20 px-4 md:px-6">
+        <article class="max-w-[780px] mx-auto">
+
+            <!-- Category Tag & Date -->
+            <div class="mb-3 font-semibold text-[13px] tracking-wider uppercase text-[#86868b]">
+                <span>UPDATE</span>
+            </div>
+            <div class="mb-6 text-[15px] text-[#86868b]">
+                June 30, 2026
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="text-3xl sm:text-4xl md:text-[48px] font-bold tracking-tight text-white leading-[1.08] mb-8">
+                Apple Creator Studio gets smarter, faster, and more connected
+            </h1>
+
+            <!-- Subtitle / Dek -->
+            <p class="text-lg sm:text-xl md:text-[22px] leading-[1.38] font-medium text-[#f5f5f7] mb-12">
+                Updates bring new integrations with Pixelmator Pro across Final Cut Pro, Keynote, Pages, and Numbers; even more intelligent tools in Final Cut Pro; the ability to generate shapes to further customize a project; and a new Producer Project in Logic Pro
+            </p>
+
+            <!-- HERO IMAGE MOCKUP BLOCK (Image 01) -->
+            <div class="my-10 relative w-full flex justify-center items-center py-6">
+                <!-- Dual Device Stack mockup container -->
+                <div class="relative w-full max-w-[740px] aspect-[16/10] bg-[#0d0d0f] rounded-2xl border border-[#222] p-4 md:p-6 overflow-hidden flex items-center justify-center shadow-2xl group">
+                    
+                    <!-- Background MacBook Pro Mockup (Final Cut Pro Preview) -->
+                    <div class="absolute right-2 bottom-4 w-[75%] md:w-[70%] aspect-[16/10] bg-[#1a1a1e] rounded-t-xl border border-[#333] shadow-2xl overflow-hidden flex flex-col">
+                        <!-- Laptop Top Bar / Camera -->
+                        <div class="h-4 bg-[#111] flex items-center justify-center px-2">
+                            <div class="w-2 h-2 rounded-full bg-[#000] border border-[#222]"></div>
+                        </div>
+                        <!-- UI Display -->
+                        <div class="flex-grow bg-[#09090b] p-2 flex flex-col justify-between">
+                            <div class="flex h-full gap-2">
+                                <!-- App Main Preview -->
+                                <div class="w-3/5 bg-black rounded border border-[#222] relative overflow-hidden flex items-center justify-center">
+                                    <div class="w-full h-full bg-gradient-to-tr from-pink-600 via-red-500 to-yellow-500 opacity-80 flex items-center justify-center">
+                                        <!-- Stylized Subject Placeholder -->
+                                        <div class="w-20 h-28 bg-red-400 rounded-t-full filter blur-xs border-2 border-cyan-400 shadow-lg flex items-center justify-center text-xs font-bold">FCP Auto Mask</div>
+                                    </div>
+                                </div>
+                                <!-- Inspector Panel -->
+                                <div class="w-2/5 bg-[#141416] rounded border border-[#222] p-2 text-[10px] space-y-1.5 font-mono text-gray-400">
+                                    <div class="text-white font-sans font-semibold border-b border-[#333] pb-1">Auto Mask</div>
+                                    <div class="flex items-center justify-between bg-[#222] p-1 rounded"><span class="text-cyan-400">✓ People</span><i data-lucide="check" class="w-3 h-3 text-cyan-400"></i></div>
+                                    <div class="flex items-center justify-between"><span class="text-gray-300">Skin</span></div>
+                                    <div class="flex items-center justify-between"><span class="text-gray-300">Hair</span></div>
+                                    <div class="mt-2 bg-[#0077ed] text-white text-center py-1 rounded font-sans text-[9px]">Add Auto Mask</div>
+                                </div>
+                            </div>
+                            <!-- Timeline Bottom -->
+                            <div class="h-6 bg-[#18181c] rounded mt-1 border border-[#2d2d30] flex items-center px-2 space-x-1">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="flex-grow h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Foreground iPad Pro Mockup (Logic Pro / Beat Breaker) -->
+                    <div class="absolute left-2 bottom-2 w-[65%] md:w-[60%] aspect-[4/3] bg-[#000] rounded-2xl border-4 border-[#222] shadow-2xl overflow-hidden flex flex-col z-10 transition-transform duration-300 group-hover:scale-[1.01]">
+                        <!-- iPad Header -->
+                        <div class="h-5 bg-[#0e0e10] flex items-center justify-between px-3 text-[9px] text-gray-400 font-mono">
+                            <span>9:41 AM Wed Jun 30</span>
+                            <div class="flex items-center space-x-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                                <span>Logic Pro</span>
+                            </div>
+                        </div>
+                        <!-- Logic Beat Breaker UI Placeholder -->
+                        <div class="flex-grow bg-[#090b10] p-2 flex flex-col justify-between text-white text-xs">
+                            <div class="flex justify-between items-center bg-[#121620] p-1.5 rounded border border-[#202838]">
+                                <span class="text-cyan-400 font-bold text-[10px]">Beat Breaker</span>
+                                <div class="flex space-x-1">
+                                    <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-[9px]">Pattern 01</span>
+                                </div>
+                            </div>
+                            <!-- Waveform Equalizer Display -->
+                            <div class="h-28 my-1 bg-[#05070a] border border-[#1b2333] rounded p-1 flex items-end justify-between space-x-1">
+                                <div class="w-1/8 h-3/4 bg-cyan-500 rounded-t"></div>
+                                <div class="w-1/8 h-1/2 bg-cyan-400 rounded-t"></div>
+                                <div class="w-1/8 h-full bg-emerald-400 rounded-t"></div>
+                                <div class="w-1/8 h-2/3 bg-cyan-500 rounded-t"></div>
+                                <div class="w-1/8 h-4/5 bg-cyan-600 rounded-t"></div>
+                                <div class="w-1/8 h-1/3 bg-teal-400 rounded-t"></div>
+                                <div class="w-1/8 h-3/5 bg-cyan-400 rounded-t"></div>
+                            </div>
+                            <!-- App Control Grid -->
+                            <div class="grid grid-cols-4 gap-1 text-[8px] text-center">
+                                <div class="bg-[#182030] py-1 rounded text-cyan-300">Fractal Time</div>
+                                <div class="bg-[#182030] py-1 rounded text-gray-400">Repeat 2x</div>
+                                <div class="bg-[#182030] py-1 rounded text-gray-400">Pitch Shift</div>
+                                <div class="bg-[#182030] py-1 rounded text-gray-400">Reverse</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Article Body Section 1 (Image 02) -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-12">
+                <p>
+                    <strong class="font-semibold text-white">Apple today introduced power-packed updates to Apple Creator Studio</strong>, a groundbreaking collection of creative apps that build on the essential role Mac, iPad, and iPhone play in the lives of millions around the world. Featuring new AI capabilities that are dynamic enough for every creative discipline, these updates make Apple Creator Studio even more connected, capable, and intelligent. Users can open and customize any image placed in Keynote, Pages, and Numbers, or even send a key frame from Final Cut Pro directly to Pixelmator Pro. Logic Pro users can elevate their music making with improvements to Chord ID or explore a new Producer Project from a Grammy Award-winning producer.
+                </p>
+
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    Even More AI-Powered Workflow Solutions
+                </h2>
+
+                <p>
+                    Final Cut Pro, the ultimate video creation app for Mac and iPad, enhances creative workflows with a new set of powerful AI tools like Generate Captions and Edit Detection, along with new content like Creator Themes with support for multiple aspect ratios, dynamic titles, and customizable backgrounds.<a href="#fn1" id="ref1" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">1</a> On Mac, users also benefit from even more tools like Auto Mask, an enhanced Match Color, Advanced Trimming, and the ability to send frames to Pixelmator Pro.
+                </p>
+            </div>
+
+            <!-- MEDIA MOCKUP 2 (Surfing video in Final Cut Pro) -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 md:p-4 border border-[#2a2a2d] mockup-screen">
+                    <div class="bg-black rounded-xl border border-[#222] overflow-hidden aspect-[16/10] flex flex-col">
+                        <!-- Top App Bar -->
+                        <div class="h-6 bg-[#1a1a1d] px-3 flex items-center justify-between text-[11px] text-gray-400 border-b border-[#2d2d30]">
+                            <div class="flex space-x-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500/80"></span>
+                            </div>
+                            <span class="text-xs text-gray-300 font-sans">Final Cut Pro - Surfing Highlight</span>
+                            <div class="w-8"></div>
+                        </div>
+                        <!-- Video Split View Placeholder -->
+                        <div class="flex-grow grid grid-cols-2 gap-1 p-1 bg-[#050505]">
+                            <!-- Left Frame -->
+                            <div class="relative bg-gradient-to-b from-sky-400 to-blue-700 flex items-center justify-center overflow-hidden rounded">
+                                <div class="absolute bottom-4 left-4 text-xs font-semibold text-white/90 bg-black/40 px-2 py-1 rounded">Reference Clip</div>
+                                <svg class="w-24 h-24 text-white/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 20s2-4 6-4 5 4 8 4 6-4 6-4V4s-2 4-6 4-5-4-8-4-6 4-6 4z"/></svg>
+                            </div>
+                            <!-- Right Frame -->
+                            <div class="relative bg-gradient-to-b from-sky-500 to-blue-800 flex items-center justify-center overflow-hidden rounded">
+                                <div class="absolute bottom-4 left-4 text-xs font-semibold text-white/90 bg-black/40 px-2 py-1 rounded">Target Match</div>
+                                <svg class="w-24 h-24 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 20s2-4 6-4 5 4 8 4 6-4 6-4V4s-2 4-6 4-5-4-8-4-6 4-6 4z"/></svg>
+                            </div>
+                        </div>
+                        <!-- Timeline Controls -->
+                        <div class="h-12 bg-[#121214] border-t border-[#262629] p-2 flex items-center justify-between">
+                            <div class="flex space-x-1 w-full">
+                                <div class="h-6 bg-blue-600/60 rounded w-1/3 border border-blue-400"></div>
+                                <div class="h-6 bg-cyan-600/60 rounded w-1/3 border border-cyan-400"></div>
+                                <div class="h-6 bg-indigo-600/60 rounded w-1/3 border border-indigo-400"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Caption below image with download button -->
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">On Mac, Final Cut Pro makes it even easier to refine incoming and outgoing frames with Advanced Trimming.</p>
+                    <button onclick="downloadMedia('Advanced Trimming Mockup')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Article Body Section 2 (Image 03, 04) -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <p>
+                    Leveraging the power of on-device AI, Generate Captions, one of the most requested features, lets users automatically transcribe audio and place the resulting subtitles perfectly in the timeline.<a href="#fn2" id="ref2" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">2</a> Options to animate the style and customize font, color, and position give editors the flexibility to add their personal style to any project. On-device AI also powers Edit Detection, which analyzes rendered video and automatically splits it back into the original clips on the timeline. Editors can jump back in to refine their edit, or quickly assemble a cut-down highlight clip for sharing on social media, without having to manually identify previous edit points.
+                </p>
+            </div>
+
+            <!-- INTERACTIVE CAROUSEL GALLERY (Image 03 & 04) -->
+            <div class="my-10 relative">
+                <div class="relative bg-[#111113] rounded-2xl p-2 md:p-4 border border-[#2a2a2d] mockup-screen">
+                    
+                    <!-- Carousel Item 1: Generate Captions -->
+                    <div id="carousel-slide-1" class="carousel-slide transition-opacity duration-500 block">
+                        <div class="bg-black rounded-xl border border-[#222] overflow-hidden aspect-[16/10] relative flex flex-col justify-between">
+                            <!-- Simulated Video Presentation Screen -->
+                            <div class="flex-grow bg-gradient-to-b from-gray-800 to-gray-950 flex flex-col items-center justify-center relative p-6">
+                                <div class="w-28 h-28 rounded-full bg-amber-200/20 border-2 border-amber-300 flex items-center justify-center mb-4">
+                                    <i data-lucide="user" class="w-16 h-16 text-amber-200"></i>
+                                </div>
+                                <!-- Dynamic Transcribed Subtitle Overlay -->
+                                <div class="bg-black/80 px-4 py-2 rounded-lg border border-yellow-500/50 text-white font-medium text-center text-sm sm:text-base max-w-md shadow-xl">
+                                    the emotions I've <span class="bg-yellow-400 text-black px-1.5 py-0.5 rounded font-bold">ever</span> felt in my whole life.
+                                </div>
+                            </div>
+                            <!-- Timeline Strip -->
+                            <div class="h-10 bg-[#161618] border-t border-[#2d2d30] px-3 flex items-center space-x-2">
+                                <div class="text-[10px] text-amber-400 font-mono">CC AI Transcribed</div>
+                                <div class="flex-grow h-3 bg-gradient-to-r from-amber-500/40 via-yellow-400 to-amber-600/40 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Carousel Item 2: Auto Mask Pool Player -->
+                    <div id="carousel-slide-2" class="carousel-slide transition-opacity duration-500 hidden">
+                        <div class="bg-black rounded-xl border border-[#222] overflow-hidden aspect-[16/10] relative flex flex-col justify-between">
+                            <div class="flex-grow bg-gradient-to-r from-purple-900 to-indigo-950 flex items-center justify-around p-6 relative">
+                                <div class="relative w-40 h-48 bg-pink-500/20 rounded-lg border-2 border-dashed border-pink-400 flex flex-col items-center justify-center p-2 text-center">
+                                    <span class="text-xs text-pink-300 font-bold mb-1">Auto Mask Isolated</span>
+                                    <div class="w-16 h-20 bg-pink-500/40 rounded-t-full"></div>
+                                </div>
+                                <div class="bg-[#18181b] p-3 rounded-lg border border-[#333] text-xs font-mono space-y-1 w-44">
+                                    <div class="text-white font-bold border-b border-gray-700 pb-1">Detected Objects</div>
+                                    <div class="text-pink-400">✓ Subject Hair</div>
+                                    <div class="text-gray-400">✓ Pool Table Felt</div>
+                                    <div class="text-gray-400">✓ Cue Ball</div>
+                                </div>
+                            </div>
+                            <div class="h-10 bg-[#161618] border-t border-[#2d2d30] px-3 flex items-center space-x-2">
+                                <div class="text-[10px] text-pink-400 font-mono">Auto Mask v2.0</div>
+                                <div class="flex-grow h-3 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Carousel Prev/Next Buttons -->
+                    <button id="carousel-prev" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white backdrop-blur flex items-center justify-center hover:bg-black/90 transition-colors z-20" aria-label="Previous Slide">
+                        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                    </button>
+                    <button id="carousel-next" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 text-white backdrop-blur flex items-center justify-center hover:bg-black/90 transition-colors z-20" aria-label="Next Slide">
+                        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                    </button>
+
+                </div>
+
+                <!-- Carousel Indicators & Caption -->
+                <div class="mt-3 flex flex-col space-y-2">
+                    <div class="flex justify-center space-x-2 py-1">
+                        <button id="dot-0" class="w-2 h-2 rounded-full bg-white transition-all"></button>
+                        <button id="dot-1" class="w-2 h-2 rounded-full bg-gray-600 transition-all"></button>
+                    </div>
+                    <div class="flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                        <p id="carousel-caption" class="pr-4">Across Mac and iPad, Final Cut Pro leverages on-device AI for Generate Captions, a feature that automatically transcribes audio and places subtitles right in the timeline.</p>
+                        <button onclick="downloadMedia('Final Cut Pro AI Features')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                            <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Body Section 3 (Image 04 continuation) -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-12">
+                <p>
+                    Mac users can take advantage of Auto Mask, a new way to isolate and refine specific elements of footage. On-device AI recognizes subjects like skin, hair, sky, foliage, and clothing, with no manual tracking needed. A simple hover over a clip brings up a live preview of what has been detected, or users can choose from the list in the inspector, making it seamless to pair the mask with any color correction or effect for precise adjustments. Auto Mask works hand in hand with Magnetic Mask, which gives editors complete control over exactly what to identify, track, and mask. Also on Mac, a reimagined Match Color produces more accurate and natural color matches across a wider range of footage and lighting conditions. Editors select a reference frame and Final Cut Pro analyzes shots to bring them into perfect harmony, with the option to refine as needed. And Advanced Trimming allows users to fine-tune incoming and outgoing frames one at a time.
+                </p>
+
+                <p>
+                    Users can also take advantage of meaningful updates in Motion and Compressor. Motion adds native support to keep vector graphics crisp at any resolution, along with Distribute Layers for a dramatically faster setup of complex animations.<a href="#fn3" id="ref3" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">3</a> Compressor introduces an Immersive Metadata Viewer, 180-degree Apple Projected Media Profile support for Apple Vision Pro, and an Anaglyph View for Stereoscopic Video Preview.<a href="#fn4" id="ref4" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">4</a>
+                </p>
+            </div>
+
+            <!-- MEDIA MOCKUP 3: Motion App Distribute Layers (Image 05) -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 md:p-4 border border-[#2a2a2d] mockup-screen">
+                    <div class="bg-[#1a1a1e] rounded-xl border border-[#222] overflow-hidden aspect-[16/10] relative flex flex-col">
+                        <!-- Motion Header Bar -->
+                        <div class="h-6 bg-[#121214] border-b border-[#2d2d30] px-3 flex items-center justify-between text-[11px] text-gray-400">
+                            <span>Motion - Cartoon Animation Project</span>
+                            <span class="text-purple-400 font-mono text-[10px]">Distribute Layers Mode</span>
+                        </div>
+                        <!-- Canvas with Animated Vector Graphics -->
+                        <div class="flex-grow bg-amber-100 relative flex items-center justify-center overflow-hidden">
+                            <!-- Background cartoon hills -->
+                            <div class="absolute bottom-0 w-full h-1/2 bg-amber-200 rounded-t-full transform scale-125"></div>
+                            <!-- Character Figure -->
+                            <div class="relative z-10 flex flex-col items-center">
+                                <div class="w-12 h-12 rounded-full bg-red-500 mb-1"></div>
+                                <div class="w-16 h-24 bg-blue-600 rounded-xl"></div>
+                                <div class="text-[10px] font-bold text-gray-800 mt-2 bg-white/80 px-2 py-0.5 rounded shadow">"Follow Your Dreams"</div>
+                            </div>
+                            <!-- Distribute Layers Floating Dialog Box -->
+                            <div class="absolute inset-auto bg-[#222226]/95 border border-[#444] rounded-lg p-3 text-xs text-white shadow-2xl w-64 space-y-2 font-sans z-20">
+                                <div class="font-bold border-b border-gray-600 pb-1">Distribute Layers</div>
+                                <div class="flex items-center justify-between text-gray-300">
+                                    <span>Offset Layers By:</span>
+                                    <span class="bg-[#111] px-2 py-0.5 rounded text-cyan-400 font-mono">00:00:00:10</span>
+                                </div>
+                                <div class="flex items-center justify-between text-gray-300">
+                                    <span>Overlap Layers By:</span>
+                                    <span class="bg-[#111] px-2 py-0.5 rounded text-cyan-400 font-mono">00:00:00:02</span>
+                                </div>
+                                <div class="pt-2 flex justify-end space-x-2">
+                                    <span class="px-2 py-1 bg-gray-700 rounded text-[10px]">Cancel</span>
+                                    <span class="px-2 py-1 bg-blue-600 rounded text-[10px] font-semibold">Distribute</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">The new Distribute Layers feature in Motion allows for dramatically faster complex animations.</p>
+                    <button onclick="downloadMedia('Motion Distribute Layers Mockup')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Article Body Section 4 (Image 06) -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-12">
+                <p>
+                    Creatives can also take advantage of updates to Final Cut Camera, the free video capture app for iPhone and iPad, now with support for Clean HDMI Out, sending a pristine video signal to external monitors and recorders. Expanded ProRes support, including ProRes LT, offers more flexible options for choosing the right codec for any production, and users can now disable digital zoom to guarantee that every frame captured is at full optical resolution.<a href="#fn5" id="ref5" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">5</a>
+                </p>
+
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    Powerful New Image Editing and Graphics Tools
+                </h2>
+
+                <p>
+                    The power of Pixelmator Pro is now at users' fingertips anywhere they need it across Apple Creator Studio.<a href="#fn6" id="ref6" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">6</a> Final Cut Pro users can now send a chosen frame directly to Pixelmator Pro, create custom thumbnails or social media graphics, and easily drop their content back into the timeline without interrupting their flow. In Keynote, Pages, and Numbers, users can select any image within a document, open it directly in Pixelmator Pro, and edit with the full suite of tools.<a href="#fn7" id="ref7" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">7</a> Changes are automatically saved back in the document, and users can return to Pixelmator Pro at any time to continue refining their graphic.
+                </p>
+
+                <p>
+                    In Pixelmator Pro, Keynote, Pages, and Numbers, it's now easy to generate vector shapes to fit any project. Users can refine their shapes as desired, and shapes are saved to a dedicated collection for use at a later time. Advanced image generation and the Content Hub also expand to Pixelmator Pro.<a href="#fn8" id="ref8" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">8</a> With image generation, users can create and edit images using natural language, and in the Content Hub, they can browse a curated collection of premium photos, graphics, shapes, and illustrations to inspire new designs.
+                </p>
+            </div>
+
+            <!-- MEDIA MOCKUP 4: Pixelmator Pro (Image 06 / 07) -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 md:p-4 border border-[#2a2a2d] mockup-screen">
+                    <div class="bg-black rounded-xl border border-[#222] overflow-hidden aspect-[16/10] relative flex items-center justify-center">
+                        <!-- Grid of graphics hub -->
+                        <div class="w-full h-full bg-[#121418] p-4 grid grid-cols-3 gap-2">
+                            <div class="bg-gradient-to-br from-cyan-600 to-blue-800 rounded-lg p-2 flex flex-col justify-between">
+                                <span class="text-xs font-bold text-white">Surfer Splash</span>
+                                <i data-lucide="sparkles" class="w-6 h-6 text-cyan-300"></i>
+                            </div>
+                            <div class="bg-[#1c2230] rounded-lg p-2 flex items-center justify-center border border-[#2d384e]">
+                                <span class="text-xs text-gray-400">Vector Shapes Collection</span>
+                            </div>
+                            <div class="bg-gradient-to-tr from-purple-700 to-pink-600 rounded-lg p-2 flex flex-col justify-between">
+                                <span class="text-xs font-bold text-white">Content Hub</span>
+                                <i data-lucide="image" class="w-6 h-6 text-pink-200"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">The full suite of creative imaging tools offered by Pixelmator Pro can now be directly accessed from within Apple Creator Studio apps like Final Cut Pro, Keynote, Pages, and Numbers.</p>
+                    <button onclick="downloadMedia('Pixelmator Pro Integration')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Article Body Section 5 (Image 07, 08) -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-12">
+                <p>
+                    Keynote, Pages, and Numbers are also adding some highly requested features for all users: Keynote gains stunning new transitions and builds, Pages on iPhone and iPad adds Auto-Hyphenate and Show Invisibles for more precise editing, and Numbers makes navigating complex spreadsheets faster than ever with the ability to hide or color-code individual sheets. And with iOS 27, iPadOS 27, and macOS 27, Freeform will also add the ability to generate shapes<a href="#fn9" id="ref9" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">9</a> and open an image in Pixelmator Pro, in addition to introducing Dark Mode, folders to organize boards, and support for drawing on Mac.
+                </p>
+
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    Taking Music Creation Further
+                </h2>
+
+                <p>
+                    Updates to Logic Pro for Mac and iPad make music creation even more intelligent, immediate, and inspiring for users.<a href="#fn10" id="ref10" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">10</a>
+                </p>
+
+                <p>
+                    Chord ID has been rebuilt to bring even more accuracy to harmonic analysis, including extended chords and inversions even if they are played on a distorted guitar or a slightly out-of-tune piano. This results in Session Players that quickly respond and perform chord changes with greater ease.<a href="#fn11" id="ref11" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">11</a>
+                </p>
+
+                <p>
+                    A new Producer Project reveals the complete Logic Pro session behind "Shoulda Never," produced by Khris Riddick-Tynes. Every multitrack recording, MIDI performance, and vocal take is preserved exactly as it was built, offering a rare behind-the-scenes look inside a professional session.
+                </p>
+
+                <p>
+                    For Logic Pro and MainStage, a new granular sync mode in Alchemy — Logic Pro's flagship sample-manipulation synthesizer — opens up entirely new dimensions of sound design.<a href="#fn12" id="ref12" class="text-[#2997ff] hover:underline font-mono text-sm align-super ml-0.5">12</a> To complement this, users can explore the new Granular Alchemy Sound Pack, which offers a curated collection of loops and presets built specifically for this new mode. Additionally, Beat Breaker expands across Mac and iPad with new filter and pan modes and intuitive randomization controls, making it easier than ever to discover fills and rhythmic variations.
+                </p>
+            </div>
+
+            <!-- MEDIA MOCKUP 5: Logic Pro iPad Interface (Image 08) -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 md:p-4 border border-[#2a2a2d] mockup-screen">
+                    <div class="bg-[#05070a] rounded-xl border border-[#1b2333] overflow-hidden aspect-[16/10] p-4 flex flex-col justify-between">
+                        <div class="flex justify-between items-center text-xs font-mono text-cyan-400 border-b border-[#1b2333] pb-2">
+                            <span>Logic Pro - Granular Alchemy Sound Pack</span>
+                            <span class="bg-cyan-500/20 px-2 py-0.5 rounded">Fever Dream Preset</span>
+                        </div>
+                        <div class="flex-grow my-4 bg-[#0a0e17] rounded-lg border border-[#182338] p-3 flex items-center justify-center relative">
+                            <!-- Visual Synth Waveform Grid -->
+                            <svg class="w-full h-full text-cyan-400" viewBox="0 0 400 150" preserveAspectRatio="none">
+                                <path d="M0,75 Q50,0 100,75 T200,75 T300,75 T400,75" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <path d="M0,75 Q50,150 100,75 T200,75 T300,75 T400,75" fill="none" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">The new Granular Alchemy Sound Pack for Logic Pro offers a curated collection of loops and presets built specifically for this new mode.</p>
+                    <button onclick="downloadMedia('Logic Pro Sound Pack Mockup')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pricing and Availability Section (Image 08) -->
+            <div class="my-12 pt-6 border-t border-[#222]">
+                <h2 class="text-2xl font-bold text-white tracking-tight mb-6">
+                    Pricing and Availability
+                </h2>
+
+                <ul class="space-y-4 text-[15px] leading-relaxed text-[#f5f5f7] list-disc pl-5">
+                    <li>
+                        Apple Creator Studio updates are available today for existing subscribers as a free update, and for new subscribers, <strong class="text-white">$12.99 (U.S.)</strong> per month or <strong class="text-white">$129 (U.S.)</strong> per year. All new subscribers will enjoy a one-month free trial of Apple Creator Studio, and with the purchase of a new Mac or qualifying iPad,<a href="#fn13" id="ref13" class="text-[#2997ff] hover:underline font-mono text-xs">13</a> customers can receive three months of Apple Creator Studio for free.<a href="#fn14" id="ref14" class="text-[#2997ff] hover:underline font-mono text-xs">14</a>
+                    </li>
+                    <li>
+                        Education savings are available for college students and educators for <strong class="text-white">$2.99 (U.S.)</strong> per month or <strong class="text-white">$29.99 (U.S.)</strong> per year.<a href="#fn15" id="ref15" class="text-[#2997ff] hover:underline font-mono text-xs">15</a>
+                    </li>
+                    <li>
+                        Apple Creator Studio is available to download on the App Store as a universal purchase.
+                    </li>
+                    <li>
+                        Up to six family members can share all of the apps and content included in Apple Creator Studio with Family Sharing.
+                    </li>
+                    <li>
+                        One-time-purchase versions of Final Cut Pro (<strong class="text-white">$299.99 U.S.</strong>), Logic Pro (<strong class="text-white">$199.99 U.S.</strong>), Pixelmator Pro (<strong class="text-white">$49.99 U.S.</strong>), Motion (<strong class="text-white">$49.99 U.S.</strong>), Compressor (<strong class="text-white">$49.99 U.S.</strong>), and MainStage (<strong class="text-white">$29.99 U.S.</strong>) are available on the Mac App Store.<a href="#fn16" id="ref16" class="text-[#2997ff] hover:underline font-mono text-xs">16</a>
+                    </li>
+                    <li>
+                        Free versions of Keynote, Pages, Numbers, and Freeform continue to be available and are included with every new iPhone, Mac, and iPad.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ARTICLE ACTIONS CARD (Image 09) -->
+            <div class="my-12 bg-[#1c1c1e] rounded-2xl p-6 border border-[#2c2c2e] space-y-4">
+                <!-- Action Row 1: Copy Text -->
+                <div class="flex items-center justify-between py-2 border-b border-[#2c2c2e] pb-4">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="type" class="w-6 h-6 text-[#86868b]"></i>
+                        <span class="text-base sm:text-lg font-semibold text-white">Text of this article</span>
+                    </div>
+                    <button id="copy-article-btn" class="px-4 py-2 bg-black hover:bg-[#2d2d2f] text-white rounded-full text-xs sm:text-sm font-semibold transition-colors flex items-center space-x-2 border border-[#333]">
+                        <span>Copy text</span>
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Action Row 2: Download Media -->
+                <div class="flex items-center justify-between py-2 pt-2">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="image" class="w-6 h-6 text-[#86868b]"></i>
+                        <span class="text-base sm:text-lg font-semibold text-white">Media in this article</span>
+                    </div>
+                    <button onclick="downloadMedia('All Article Images Zip')" class="px-4 py-2 bg-black hover:bg-[#2d2d2f] text-white rounded-full text-xs sm:text-sm font-semibold transition-colors flex items-center space-x-2 border border-[#333]">
+                        <span>Download all media</span>
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FOOTNOTES LIST SECTION (Image 09) -->
+            <div class="mt-16 pt-8 border-t border-[#222] text-[12px] leading-relaxed text-[#86868b] space-y-3 font-normal">
+                <p id="fn1">1. The Apple Creator Studio version of Final Cut Pro on Mac requires macOS 15.6 or later. Some features require Apple silicon. Final Cut Pro for iPad requires iPadOS 18.6 or later and an iPad, iPad Pro, or iPad Air with an Apple M1 chip or later, iPad (A16), or iPad mini (A17 Pro). <a href="#ref1" class="text-[#2997ff]">↩</a></p>
+                <p id="fn2">2. Generate Captions in Final Cut Pro requires a Mac with Apple silicon and macOS 15.6 or later; or an iPad with the Apple M1 chip or later, iPad (A16), or iPad mini (A17 Pro) and iPadOS 26 or later. Available only in U.S. English. <a href="#ref2" class="text-[#2997ff]">↩</a></p>
+                <p id="fn3">3. Motion requires macOS 15.6 or later. <a href="#ref3" class="text-[#2997ff]">↩</a></p>
+                <p id="fn4">4. Compressor requires macOS 15.6 or later. Some features require a Mac with Apple silicon. <a href="#ref4" class="text-[#2997ff]">↩</a></p>
+                <p id="fn5">5. Final Cut Camera requires an iPhone with iOS 18.6 or later, or an iPad with iPadOS 18.6 or later. Expanded ProRes support requires iPhone 13 Pro or later, and Clean HDMI Out requires iPhone 17 Pro. <a href="#ref5" class="text-[#2997ff]">↩</a></p>
+                <p id="fn6">6. The Apple Creator Studio version of Pixelmator Pro requires macOS 26 or later. Pixelmator Pro for iPad requires iPadOS 26 or later and an iPad, iPad Pro, or iPad Air with an Apple M1 chip or later; iPad (A16); or iPad mini (A17 Pro). <a href="#ref6" class="text-[#2997ff]">↩</a></p>
+                <p id="fn7">7. The Apple Creator Studio version of Keynote, Pages, and Numbers requires iOS 18 or later, iPadOS 18 or later, or macOS Sequoia 15.6 or later. Some intelligent features require iOS 26, iPadOS 26, or macOS Tahoe. <a href="#ref7" class="text-[#2997ff]">↩</a></p>
+                <p id="fn8">8. Image Generation and Shape Generation require iPhone 15 Pro or iPhone 15 Pro Max or later running iOS 26 or later; an iPad with an A17 Pro chip, or an iPad Pro or iPad Air with an M1 chip or later, running iPadOS 26 or later; or a Mac with Apple silicon running macOS 26 or later and an Apple Account with iCloud enabled. Some artificial intelligence features of Apple Creator Studio utilize third-party models and may have usage limits and restrictions. Image Generation and Shape Generation in Pixelmator Pro require an Apple Intelligence-capable device. For a list of Apple Intelligence availability and technical requirements, see <a href="#" class="underline text-gray-400">support.apple.com/121115</a> for more information. <a href="#ref8" class="text-[#2997ff]">↩</a></p>
+                <p id="fn9">9. New updates to Freeform will be available to current subscribers as a free software update with a compatible iPhone, iPad, or Mac running iOS 27, iPadOS 27, or macOS 27. <a href="#ref9" class="text-[#2997ff]">↩</a></p>
+                <p id="fn10">10. Logic Pro for Mac requires macOS 15.6 or later and a Mac with Apple silicon. Logic Pro for iPad requires iPadOS 26 or later and an iPad with Apple A12 Bionic chip or later. Some features require Apple A17 Pro chip or later. <a href="#ref10" class="text-[#2997ff]">↩</a></p>
+                <p id="fn11">11. Session Players require iPad with the Apple M1 chip or later, or a Mac with Apple silicon. <a href="#ref11" class="text-[#2997ff]">↩</a></p>
+                <p id="fn12">12. MainStage requires macOS 15.6 or later and a Mac with Apple silicon. <a href="#ref12" class="text-[#2997ff]">↩</a></p>
+                <p id="fn13">13. A new Mac or iPad purchased from Apple or an Apple Authorized Reseller. iPad must have at least 6 GB memory and an A16, A17 Pro, or M-series chip or later. <a href="#ref13" class="text-[#2997ff]">↩</a></p>
+                <p id="fn14">14. New and qualified returning subscribers only. Plan renews at $12.99 per month or $129 per year based on plan selected. Only one offer per Apple Account and only one offer per family if they're part of a Family Sharing group, regardless of the number of devices that they or their family purchase. This offer is not available if the account holder or their family have previously accepted an Apple Creator Studio subscription three-months-free offer. Offer good for three months after eligible device activation. Plan automatically renews until cancelled. Restrictions and other terms apply. <a href="#ref14" class="text-[#2997ff]">↩</a></p>
+                <p id="fn15">15. New subscribers only. Education Savings Plan automatically renews at $2.99 per month or $29.99 per year based on plan selected until cancelled. Offer good for college students and educators only and does not extend to a Family Sharing group. Verification required. Terms apply. Limited-time offer; offer may end at any time. <a href="#ref15" class="text-[#2997ff]">↩</a></p>
+                <p id="fn16">16. The one-time-purchase versions of Final Cut Pro require macOS 15.6 or later, Logic Pro requires macOS 15.6 or later, and Pixelmator Pro requires macOS 12 or later. MainStage is available for any Mac supported by macOS 15.6 or later. Motion requires macOS 15.6 or later. Compressor requires macOS 15.6 or later and some features require a Mac with Apple silicon. <a href="#ref16" class="text-[#2997ff]">↩</a></p>
+            </div>
+
+        </article>
+    </main>
+
+    <!-- Apple Global Footer -->
+    <footer class="bg-[#111113] border-t border-[#222] py-8 text-xs text-[#86868b]">
+        <div class="max-w-[780px] mx-auto px-4 flex flex-col space-y-4">
+            <div class="flex items-center space-x-2 text-gray-400">
+                <a href="#" class="hover:underline">Newsroom</a>
+                <span>&gt;</span>
+                <span class="text-gray-200">Apple Creator Studio Updates</span>
+            </div>
+            <div class="pt-4 border-t border-[#222] flex flex-col sm:flex-row justify-between items-center text-[11px] space-y-2 sm:space-y-0">
+                <div>Copyright © 2026 Apple Inc. All rights reserved.</div>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:underline">Privacy Policy</a>
+                    <a href="#" class="hover:underline">Terms of Use</a>
+                    <a href="#" class="hover:underline">Sales Policy</a>
+                    <a href="#" class="hover:underline">Legal</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Widget -->
+    <div id="toast" class="toast fixed bottom-6 right-6 bg-[#2d2d2f] text-white px-5 py-3 rounded-xl border border-[#444] shadow-2xl z-50 flex items-center space-x-3">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+        <span id="toast-msg" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // 1. Carousel Controls Logic
+        const slides = [
+            {
+                id: 'carousel-slide-1',
+                caption: 'Across Mac and iPad, Final Cut Pro leverages on-device AI for Generate Captions, a feature that automatically transcribes audio and places subtitles right in the timeline.'
+            },
+            {
+                id: 'carousel-slide-2',
+                caption: 'Auto Mask joins Magnetic Mask on Mac to automatically suggest specific elements users might want to isolate and refine in their footage.'
+            }
+        ];
+        let currentSlide = 0;
+
+        function updateCarousel(index) {
+            currentSlide = index;
+            slides.forEach((slide, i) => {
+                const elem = document.getElementById(slide.id);
+                const dot = document.getElementById(`dot-${i}`);
+                if (i === currentSlide) {
+                    elem.classList.remove('hidden');
+                    elem.classList.add('block');
+                    dot.classList.remove('bg-gray-600');
+                    dot.classList.add('bg-white');
+                } else {
+                    elem.classList.remove('block');
+                    elem.classList.add('hidden');
+                    dot.classList.remove('bg-white');
+                    dot.classList.add('bg-gray-600');
+                }
+            });
+            document.getElementById('carousel-caption').innerText = slides[currentSlide].caption;
+        }
+
+        document.getElementById('carousel-prev').addEventListener('click', () => {
+            let prev = (currentSlide - 1 + slides.length) % slides.length;
+            updateCarousel(prev);
+        });
+
+        document.getElementById('carousel-next').addEventListener('click', () => {
+            let next = (currentSlide + 1) % slides.length;
+            updateCarousel(next);
+        });
+
+        document.getElementById('dot-0').addEventListener('click', () => updateCarousel(0));
+        document.getElementById('dot-1').addEventListener('click', () => updateCarousel(1));
+
+        // 2. Toast Notification Function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 3. Download Media simulation
+        function downloadMedia(title) {
+            showToast(`Downloading: ${title}...`);
+        }
+
+        // 4. Copy Text Button Action
+        document.getElementById('copy-article-btn').addEventListener('click', function() {
+            const textToCopy = `Apple Creator Studio gets smarter, faster, and more connected\n\nJune 30, 2026\n\nApple today introduced power-packed updates to Apple Creator Studio...`;
+            
+            // execCommand copy implementation for frame compatibility
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            showToast('Article text copied to clipboard!');
+        });
+
+        // 5. Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+        });
+
+        // 6. Search Bar Toggle
+        const searchBtn = document.getElementById('search-btn');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search');
+
+        searchBtn.addEventListener('click', () => {
+            searchBar.classList.toggle('hidden');
+            if(!searchBar.classList.contains('hidden')) {
+                document.getElementById('search-input').focus();
+            }
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('hidden');
+        });
+
+        // 7. Highlight target footnotes when clicked
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#fn')) {
+                const target = document.querySelector(hash);
+                if (target) {
+                    target.classList.add('footnote-target');
+                    setTimeout(() => target.classList.remove('footnote-target'), 2000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

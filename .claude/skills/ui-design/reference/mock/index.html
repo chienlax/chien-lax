@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>A benchmark of four vector database engines</title>
+<meta name="description" content="Milvus wins on recall, Qdrant wins on tail latency, and the crossover point is a filter you attach to the query.">
+
+<!-- Resolve the theme before first paint. Without this the page flashes
+     light before the stored dark choice applies. -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('ui-design-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.3.0/index.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.3.0/500.css" rel="stylesheet">
+
+<!-- Syntax colours. The theme module enables exactly one of these. -->
+<link id="hljs-light" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css">
+<link id="hljs-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github-dark.min.css" disabled>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  darkMode: ['selector', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        bg:            'rgb(var(--bg) / <alpha-value>)',
+        tint:          'rgb(var(--bg-tint) / <alpha-value>)',
+        surface:       'rgb(var(--surface) / <alpha-value>)',
+        'surface-2':   'rgb(var(--surface-2) / <alpha-value>)',
+        content:       'rgb(var(--text) / <alpha-value>)',
+        muted:         'rgb(var(--text-muted) / <alpha-value>)',
+        line:          'rgb(var(--border) / <alpha-value>)',
+        'line-subtle': 'rgb(var(--border-subtle) / <alpha-value>)',
+        accent:        'rgb(var(--accent) / <alpha-value>)',
+        'accent-hover':'rgb(var(--accent-hover) / <alpha-value>)',
+        success:       'rgb(var(--success) / <alpha-value>)',
+        warning:       'rgb(var(--warning) / <alpha-value>)',
+        danger:        'rgb(var(--danger) / <alpha-value>)',
+        data1:         'rgb(var(--data-1) / <alpha-value>)',
+        data2:         'rgb(var(--data-2) / <alpha-value>)',
+        data3:         'rgb(var(--data-3) / <alpha-value>)',
+        data4:         'rgb(var(--data-4) / <alpha-value>)',
+        data5:         'rgb(var(--data-5) / <alpha-value>)',
+        data6:         'rgb(var(--data-6) / <alpha-value>)'
+      },
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        mono: ['Monaspace Neon', 'SF Mono', 'Menlo', 'Consolas', 'monospace']
+      },
+      maxWidth: { prose: '730px', breakout: '980px' },
+      borderRadius: { xl: '16px', '2xl': '20px' }
+    }
+  }
+}
+</script>
+
+<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<!-- ── header ─────────────────────────────────────────────────────── -->
+<header class="glass-header">
+  <div class="glass-header__inner">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <button class="icon-btn toc-toggle" type="button" data-toc-toggle aria-expanded="false" aria-label="Show contents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h10"/>
+        </svg>
+      </button>
+      <a class="glass-header__brand" href="#top">Vector Search Bench</a>
+    </div>
+
+    <nav class="glass-header__nav" aria-label="Sections">
+      <a href="#setup">Setup</a><a href="#latency-at-three-concurrency-levels">Latency at three concurrency levels</a><a href="#recall-against-latency">Recall against latency</a><a href="#filtered-queries">Filtered queries</a><a href="#recommendation">Recommendation</a>
+    </nav>
+
+    <div class="glass-header__actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch theme" aria-pressed="false">
+        <svg data-icon-moon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg data-icon-sun viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="progress-bar" data-progress role="presentation"></div>
+
+<!-- ── contents rail ──────────────────────────────────────────────── -->
+<aside class="toc scroll-hidden" data-toc aria-label="Table of contents">
+  <div class="toc__label">On this page</div>
+  <div data-toc-body></div>
+</aside>
+
+<!-- ── hero ───────────────────────────────────────────────────────── -->
+<div id="top"></div>
+<section class="hero">
+  <div class="prose-col">
+    <p class="hero__eyebrow">Research report</p>
+    <h1 class="hero__title">A benchmark of four vector database engines</h1>
+    <p class="hero__dek">Milvus wins on recall, Qdrant wins on tail latency, and the crossover point is a filter you attach to the query.</p>
+    <div class="hero__rule"></div>
+    <div class="hero__meta">
+      <span class="chip">10 August 2026</span><span class="chip">9 min read</span><span class="chip">v1</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── content ────────────────────────────────────────────────────── -->
+<main id="content">
+  <article class="doc" data-toc-root>
+    <h2 id="setup">Setup</h2>
+<p>We compared four engines on the same 10 million vector corpus: Milvus 2.4, Qdrant 1.9, Weaviate 1.25, and a Faiss HNSW baseline with no server layer. Each engine indexed the same 768-dimension embeddings from a public passage corpus, and answered the same 5,000 query set at three concurrency levels.</p>
+<h3 id="hardware-and-data">Hardware and data</h3>
+<p>Every engine ran on the same node: 32 vCPUs, 128 GB RAM, one NVMe volume. The corpus is 10 million passages embedded with a 768-dimension sentence encoder. Ground-truth recall used exact brute-force search over the same vectors.</p>
+<h3 id="index-parameters">Index parameters</h3>
+<p>We tuned each engine to its own recommended HNSW settings rather than forcing one shared parameter set.</p>
+<div class="code-block breakout"><div class="code-block__head"><span>yaml</span><button class="copy-btn" type="button" data-copy="code" data-copy-message="Code copied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button></div><pre><code class="language-yaml">milvus:
+  index_type: HNSW
+  M: 16
+  efConstruction: 200
+qdrant:
+  m: 16
+  ef_construct: 200
+weaviate:
+  maxConnections: 16
+  efConstruction: 200
+faiss:
+  M: 16
+  efConstruction: 200
+</code></pre></div>
+<div class="callout callout--note"><p class="callout__title">Note</p><p>All four engines used the same M and efConstruction. The gaps below come from query planning and storage layout, not from index tuning.</p>
+</div>
+<h2 id="latency-at-three-concurrency-levels">Latency at three concurrency levels</h2>
+<p>Median and p99 latency both matter for a serving system: a low median with a long tail still misses its SLA.</p>
+<h3 id="median-latency">Median latency</h3>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-1"></div></div><p class="figure__caption"><strong>Figure 1:</strong> At 32 clients, Qdrant holds a 5.5 ms edge over Faiss and a 13.2 ms edge over Weaviate.</p></div>
+<h3 id="tail-latency-over-time">Tail latency over time</h3>
+<p>We logged p99 latency across a two-hour soak run at fixed load, to see whether any engine degrades as its cache fills.</p>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-2"></div></div><p class="figure__caption"><strong>Figure 2:</strong> Milvus p99 grows 83 percent over the run; Qdrant grows 28 percent.</p></div>
+<p>Faiss has no server process to soak, so it is absent from this chart.</p>
+<h2 id="recall-against-latency">Recall against latency</h2>
+<p>The usual trade-off holds: pushing <code>ef_search</code> up buys recall at a latency cost. The question is the shape of that curve per engine.</p>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-3"></div></div><p class="figure__caption"><strong>Figure 3:</strong> Milvus reaches 0.99 recall at 17.8 ms; no other engine crosses 0.98 under 20 ms.</p></div>
+<blockquote>
+<p>Recall at 10 is the fraction of the true 10 nearest neighbours that the approximate search returns, and it is the number that decides whether a downstream ranking model ever sees the right passage at all.</p>
+<p><cite>Section 3.2, benchmark methodology</cite></p>
+</blockquote>
+<h2 id="filtered-queries">Filtered queries</h2>
+<p>A filtered query narrows the candidate set before the vector search runs, and that is where the four engines diverge the most.<sup id="ref1"><a class="footnote-ref" href="#fn1" aria-label="Footnote 1">1</a></sup></p>
+<h3 id="metadata-filter-overhead">Metadata filter overhead</h3>
+<div class="table-wrap breakout">
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Unfiltered latency</th>
+<th>Filtered latency</th>
+<th>Overhead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Faiss HNSW</td>
+<td>4.1 ms</td>
+<td>9.8 ms</td>
+<td>+139%</td>
+</tr>
+<tr>
+<td>Milvus</td>
+<td>5.3 ms</td>
+<td>7.1 ms</td>
+<td>+34%</td>
+</tr>
+<tr>
+<td>Qdrant</td>
+<td>3.9 ms</td>
+<td>4.6 ms</td>
+<td>+18%</td>
+</tr>
+<tr>
+<td>Weaviate</td>
+<td>6.7 ms</td>
+<td>8.9 ms</td>
+<td>+33%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Faiss has no native metadata index, so the filter step scans candidate IDs after the vector search returns them. Qdrant's payload index runs the filter first and prunes the graph walk, which is why its overhead stays under 20 percent.</p>
+<h3 id="why-the-overhead-differs">Why the overhead differs</h3>
+<div class="figure breakout"><div class="figure__body"><pre class="mermaid">flowchart TD
+    A[&quot;Query with filter&quot;] --&gt; B{&quot;Filter runs before&lt;br/&gt;or after search?&quot;}
+    B --&gt;|Before| C[&quot;Qdrant, Milvus:&lt;br/&gt;pruned graph walk&quot;]
+    B --&gt;|After| D[&quot;Faiss:&lt;br/&gt;post-filter scan&quot;]
+    C --&gt; E[&quot;Lower overhead&quot;]
+    D --&gt; F[&quot;Higher overhead&quot;]
+</pre></div></div>
+<h2 id="recommendation">Recommendation</h2>
+<p>For a workload with heavy metadata filtering and a strict p99 target, Qdrant is the safer default. For a workload that can spend more latency budget for the last point of recall, Milvus is the stronger choice. Faiss remains the right pick only when a full server process is not wanted at all.</p>
+
+  </article>
+  <section class="footnotes prose-col" aria-label="Footnotes"><ol><li id="fn1">We tested one filter shape: an equality match on a single categorical field present on 20 percent of the corpus. A range filter or a filter on a rarer field would shift these numbers. <a class="footnote-back" href="#ref1" aria-label="Back to text">&#8617;</a></li></ol></section>
+</main>
+
+<button class="to-top" type="button" data-to-top aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<div class="toast" data-toast role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+  <span data-toast-text></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
+<script src="./script.js"></script>
+
+<!-- Mermaid, themed from the same tokens and re-rendered on a switch. -->
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+const css = (name) => {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v ? `rgb(${v})` : '#888';
+};
+
+function config() {
+  return {
+    startOnLoad: false,
+    securityLevel: 'strict',
+    fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans'),
+    theme: 'base',
+    // Natural size, then scaled down by CSS if it exceeds the figure. With
+    // useMaxWidth the diagram stretches and its labels shrink to unreadable.
+    flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis', padding: 16 },
+    sequence: { useMaxWidth: false, boxMargin: 12 },
+    gantt: { useMaxWidth: false },
+    journey: { useMaxWidth: false },
+    pie: { useMaxWidth: false },
+    class: { useMaxWidth: false },
+    state: { useMaxWidth: false },
+    er: { useMaxWidth: false },
+    mindmap: { useMaxWidth: false },
+    timeline: { useMaxWidth: false },
+    themeVariables: {
+      background: css('--bg'),
+      primaryColor: css('--surface'),
+      primaryTextColor: css('--text'),
+      primaryBorderColor: css('--border'),
+      secondaryColor: css('--surface-2'),
+      tertiaryColor: css('--bg-tint'),
+      lineColor: css('--text-muted'),
+      textColor: css('--text'),
+      mainBkg: css('--surface'),
+      nodeBorder: css('--border'),
+      clusterBkg: css('--bg-tint'),
+      clusterBorder: css('--border-subtle'),
+      titleColor: css('--text'),
+      // --surface, not --bg: a diagram sits inside a figure card, so an edge
+      // label painted with the page background shows as a box against it.
+      edgeLabelBackground: css('--surface'),
+      pie1: css('--data-1'), pie2: css('--data-2'), pie3: css('--data-3'),
+      pie4: css('--data-4'), pie5: css('--data-5'), pie6: css('--data-6'),
+      cScale0: css('--data-1'), cScale1: css('--data-2'), cScale2: css('--data-3'),
+      actorBkg: css('--surface'), actorBorder: css('--border'), actorTextColor: css('--text'),
+      signalColor: css('--text-muted'), signalTextColor: css('--text'),
+      labelBoxBkgColor: css('--surface'), labelTextColor: css('--text'),
+      noteBkgColor: css('--bg-tint'), noteTextColor: css('--text'), noteBorderColor: css('--border'),
+      taskBkgColor: css('--data-1'), taskTextColor: css('--text'),
+      gridColor: css('--border-subtle'), sectionBkgColor: css('--bg-tint')
+    }
+  };
+}
+
+async function draw() {
+  const blocks = document.querySelectorAll('pre.mermaid, div.mermaid');
+  if (!blocks.length) return;
+  blocks.forEach((b) => {
+    if (!b.dataset.src) b.dataset.src = b.textContent.trim();
+    b.textContent = b.dataset.src;
+    b.removeAttribute('data-processed');
+  });
+  mermaid.initialize(config());
+  await mermaid.run({ nodes: blocks });
+}
+
+draw();
+document.addEventListener('themechange', draw);
+</script>
+
+<script src="https://unpkg.com/lucide@0.454.0"></script>
+<script>if (window.lucide) window.lucide.createIcons();</script>
+<script>
+UI.renderChart('#chart-1', {"type": "groupedBar", "title": "Median query latency by concurrency", "categories": ["1 client", "8 clients", "32 clients"], "unit": " ms", "series": [{"name": "Faiss HNSW", "values": [4.1, 6.8, 19.2]}, {"name": "Milvus", "values": [5.3, 8.1, 21.4]}, {"name": "Qdrant", "values": [3.9, 5.9, 14.7]}, {"name": "Weaviate", "values": [6.7, 10.5, 27.9]}]});
+UI.renderChart('#chart-2', {"type": "line", "title": "p99 latency over a two-hour soak run", "categories": ["0 min", "30 min", "60 min", "90 min", "120 min"], "unit": " ms", "series": [{"name": "Qdrant", "values": [18, 19, 21, 22, 23]}, {"name": "Milvus", "values": [24, 27, 33, 39, 44]}, {"name": "Weaviate", "values": [31, 35, 40, 47, 55]}]});
+UI.renderChart('#chart-3', {"type": "scatter", "title": "Recall at 10 versus median latency", "unit": " ms", "series": [{"name": "Faiss HNSW", "points": [[4.1, 0.91], [7.5, 0.95], [14.2, 0.98]]}, {"name": "Milvus", "points": [[5.3, 0.92], [9.0, 0.96], [17.8, 0.99]]}, {"name": "Qdrant", "points": [[3.9, 0.9], [6.4, 0.95], [12.1, 0.985]]}, {"name": "Weaviate", "points": [[6.7, 0.89], [11.9, 0.94], [22.0, 0.97]]}]});
+</script>
+</body>
+</html>

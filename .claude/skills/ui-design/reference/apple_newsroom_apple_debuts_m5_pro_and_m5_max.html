@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple debuts M5 Pro and M5 Max to supercharge the most demanding pro workflows - Apple</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            bg: '#000000',
+                            card: '#1d1d1f',
+                            cardHover: '#2d2d2f',
+                            textPrimary: '#f5f5f7',
+                            textMuted: '#86868b',
+                            blue: '#2997ff',
+                            blueHover: '#0077ed',
+                            border: '#333336'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+                        mono: ['"SF Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Apple Dark Mode Styling */
+        body {
+            background-color: #000000;
+            color: #f5f5f7;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Reading Progress Bar */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #0077ed, #a855f7);
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Glassmorphism Navigation Header */
+        .apple-nav {
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Glow effects for Chip Badges */
+        .glow-m5-pro {
+            background: radial-gradient(circle at 30% 30%, #0284c7 0%, #0369a1 40%, #0f172a 100%);
+            box-shadow: 0 0 35px rgba(2, 132, 199, 0.35);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+        .glow-m5-max {
+            background: radial-gradient(circle at 70% 30%, #a855f7 0%, #7e22ce 40%, #0f172a 100%);
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.35);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+        }
+
+        /* Mockup Glass Frame Shadows */
+        .mockup-frame {
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Toast Popup Animation */
+        .toast {
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-black text-[#f5f5f7] min-h-screen flex flex-col selection:bg-[#2997ff] selection:text-white">
+
+    <!-- Scroll Progress Indicator -->
+    <div id="progress-bar"></div>
+
+    <!-- Apple Global Navigation Header -->
+    <header class="apple-nav fixed top-0 left-0 right-0 z-50 h-[44px] flex items-center text-xs tracking-tight text-[#f5f5f7]/80">
+        <div class="max-w-[1024px] w-full mx-auto px-4 flex justify-between items-center h-full font-normal">
+            <!-- Apple Logo -->
+            <a href="#" class="hover:text-white transition-colors" aria-label="Apple">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 170 170">
+                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                </svg>
+            </a>
+            <!-- Nav Links -->
+            <div class="hidden md:flex items-center space-x-7 text-[#cccccc]">
+                <a href="#" class="hover:text-white transition-colors">Store</a>
+                <a href="#" class="hover:text-white transition-colors">Mac</a>
+                <a href="#" class="hover:text-white transition-colors">iPad</a>
+                <a href="#" class="hover:text-white transition-colors">iPhone</a>
+                <a href="#" class="hover:text-white transition-colors">Watch</a>
+                <a href="#" class="hover:text-white transition-colors">Vision</a>
+                <a href="#" class="hover:text-white transition-colors">AirPods</a>
+                <a href="#" class="hover:text-white transition-colors">TV & Home</a>
+                <a href="#" class="hover:text-white transition-colors">Entertainment</a>
+                <a href="#" class="hover:text-white transition-colors">Accessories</a>
+                <a href="#" class="hover:text-white transition-colors">Support</a>
+            </div>
+            <!-- Search & Bag Icons -->
+            <div class="flex items-center space-x-5 text-[#cccccc]">
+                <button id="search-toggle-btn" class="hover:text-white transition-colors" aria-label="Search">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+                <button class="hover:text-white transition-colors" aria-label="Shopping Bag">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar Overlay -->
+    <div id="search-bar" class="hidden fixed top-[44px] left-0 right-0 bg-[#161617] border-b border-[#333] p-4 z-40">
+        <div class="max-w-[680px] mx-auto flex items-center bg-[#2d2d2d] rounded-lg px-3 py-1.5">
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+            <input type="text" id="search-input" placeholder="Search Newsroom..." class="bg-transparent text-white text-sm w-full outline-none">
+            <button id="close-search-btn" class="text-xs text-gray-400 hover:text-white ml-2">Cancel</button>
+        </div>
+    </div>
+
+    <!-- MAIN ARTICLE CONTAINER -->
+    <main class="flex-grow pt-[80px] pb-20 px-4 md:px-6">
+        <article class="max-w-[780px] mx-auto">
+
+            <!-- Metadata line -->
+            <div class="mb-3 font-semibold text-[13px] tracking-wider uppercase text-[#86868b]">
+                <span>PRESS RELEASE</span>
+            </div>
+            <div class="mb-6 text-[15px] text-[#86868b]">
+                March 3, 2026
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="text-3xl sm:text-4xl md:text-[48px] font-bold tracking-tight text-white leading-[1.08] mb-8">
+                Apple debuts M5 Pro and M5 Max to supercharge the most demanding pro workflows
+            </h1>
+
+            <!-- Subtitle / Dek -->
+            <p class="text-lg sm:text-xl md:text-[22px] leading-[1.38] font-medium text-[#f5f5f7] mb-12">
+                Built using the new Apple-designed Fusion Architecture, M5 Pro and M5 Max feature an advanced CPU, a next-generation GPU with Neural Accelerators, and higher unified memory bandwidth for a massive increase in AI compute
+            </p>
+
+            <!-- HERO M5 CHIPS DISPLAY GRAPHIC -->
+            <div class="my-12 flex justify-center items-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-[560px]">
+                    <!-- M5 PRO Chip Graphic -->
+                    <div class="aspect-square glow-m5-pro rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group transition-transform duration-300 hover:scale-[1.02]">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-7 h-7 fill-white" viewBox="0 0 170 170">
+                                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                            </svg>
+                            <span class="text-3xl font-bold tracking-tight text-white font-sans">M5</span>
+                        </div>
+                        <div class="text-3xl font-extrabold tracking-wider text-white uppercase font-sans">
+                            PRO
+                        </div>
+                    </div>
+
+                    <!-- M5 MAX Chip Graphic -->
+                    <div class="aspect-square glow-m5-max rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group transition-transform duration-300 hover:scale-[1.02]">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-7 h-7 fill-white" viewBox="0 0 170 170">
+                                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                            </svg>
+                            <span class="text-3xl font-bold tracking-tight text-white font-sans">M5</span>
+                        </div>
+                        <div class="text-3xl font-extrabold tracking-wider text-white uppercase font-sans">
+                            MAX
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Caption -->
+            <div class="text-center text-[13px] text-[#86868b] leading-relaxed mb-10 max-w-lg mx-auto">
+                M5 Pro and M5 Max are built using the new Apple-designed Fusion Architecture that connects two dies with advanced IP blocks into a single SoC, delivering significant performance increases that push the limits of what's possible with the new MacBook Pro.
+            </div>
+
+            <!-- ARTICLE SECTION 1: CUPERTINO DATELINE & OVERVIEW -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <p>
+                    <strong class="font-semibold text-white">CUPERTINO, CALIFORNIA —</strong> Apple introduced M5 Pro and M5 Max, advanced system-on-chip architectures powering the new MacBook Pro. Built on an innovative Fusion Architecture, these processors connect dual dies into a single high-performance system featuring an 18-core CPU, scalable next-generation GPU with dedicated Neural Accelerators, unified memory controller, Media Engine, and Thunderbolt 5 support. With 6 super cores delivering world-class single-threaded speed alongside 12 new power-efficient performance cores, multithreaded workloads run up to 30% faster than previous generations. Hardware-accelerated ray tracing gains up to 35% higher rendering performance, while AI compute capacity increases more than 4x.
+                </p>
+
+                <!-- Executive Quote Box -->
+                <blockquote class="my-8 pl-6 border-l-2 border-[#333] text-lg sm:text-xl leading-relaxed text-gray-200 font-medium italic">
+                    "M5 Pro and M5 Max represent a breakthrough for Apple silicon, scaling core compute capabilities through our Fusion Architecture while maintaining our relentless focus on energy efficiency and unified memory performance," said Johny Srouji, Apple's senior vice president of Hardware Technologies.
+                </blockquote>
+            </div>
+
+            <!-- MOCKUP 1: MacBook Pro running Xcode Agentic Coding -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 sm:p-4 border border-[#2a2a2d] mockup-frame">
+                    <div class="bg-[#18181c] rounded-xl border border-[#333] overflow-hidden aspect-[16/10] flex flex-col font-sans">
+                        <!-- macOS Top Bar -->
+                        <div class="h-6 bg-[#212126] px-3 flex items-center justify-between text-[11px] text-gray-400 border-b border-[#333]">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                                <span class="text-xs text-gray-300 ml-2 font-mono">Xcode — Agentic Coding Assistant</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-cyan-400">M5 Max • 128GB Unified Memory</span>
+                        </div>
+                        <!-- IDE Screen Simulation -->
+                        <div class="flex-grow grid grid-cols-12 bg-[#0d0d11] p-2 gap-2">
+                            <!-- Left Sidebar: AI Agent Workflow -->
+                            <div class="col-span-4 bg-[#141419] rounded-lg p-2.5 border border-[#282830] flex flex-col justify-between text-xs space-y-2">
+                                <div class="space-y-2">
+                                    <div class="text-cyan-400 font-bold text-[11px] flex items-center space-x-1">
+                                        <i data-lucide="bot" class="w-3.5 h-3.5"></i>
+                                        <span>Agentic Coding Session</span>
+                                    </div>
+                                    <div class="bg-[#1e1e26] p-2 rounded text-[10px] text-gray-300 font-mono">
+                                        Agent: Refactoring 18-core multithreaded simulation loop...
+                                    </div>
+                                    <div class="space-y-1 text-[10px] text-gray-400 font-mono">
+                                        <div class="text-emerald-400">✓ Super core dispatch optimized</div>
+                                        <div class="text-emerald-400">✓ Memory safety integrity checked</div>
+                                        <div class="text-cyan-300">⚡ Generating Neural Accelerator kernel...</div>
+                                    </div>
+                                </div>
+                                <div class="bg-cyan-500/20 text-cyan-300 p-1.5 rounded text-center text-[10px] font-semibold border border-cyan-500/30">
+                                    Compiling 2.4 Million Tokens/sec
+                                </div>
+                            </div>
+                            <!-- Right Workspace: Code + Preview -->
+                            <div class="col-span-8 bg-[#141419] rounded-lg p-3 border border-[#282830] flex flex-col justify-between font-mono text-[11px]">
+                                <div class="text-purple-400 space-y-1">
+                                    <div><span class="text-blue-400">import</span> <span class="text-emerald-300">MetalPerformanceShaders</span></div>
+                                    <div><span class="text-blue-400">import</span> <span class="text-emerald-300">AppleIntelligence</span></div>
+                                    <div class="text-gray-500 pt-2">// M5 Fusion Architecture Pipeline</div>
+                                    <div><span class="text-pink-400">func</span> <span class="text-yellow-300">dispatchNeuralTensor</span>(data: [<span class="text-cyan-300">Float</span>]) {</div>
+                                    <div class="pl-4 text-gray-300">let device = <span class="text-cyan-300">MTLCreateSystemDefaultDevice</span>()!</div>
+                                    <div class="pl-4 text-gray-300">let accelerator = device.<span class="text-yellow-300">makeNeuralAccelerator</span>()</div>
+                                    <div class="pl-4 text-emerald-400">accelerator.executeAsync(tokens: 128000)</div>
+                                    <div>}</div>
+                                </div>
+                                <div class="bg-black/60 p-2 rounded border border-[#333] flex justify-between items-center text-[10px] text-gray-400">
+                                    <span>Xcode Build Time: <strong>1.2s</strong></span>
+                                    <span class="text-emerald-400 font-semibold">Zero Memory Swapping</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">The advanced CPU cores, next-generation GPU, and higher unified memory bandwidth on M5 Pro and M5 Max enable users to bring their biggest ideas to life with great speed and efficiency. This means users can experience accelerated code compilation and on-device agentic coding in apps like Xcode.</p>
+                    <button onclick="downloadMedia('Xcode Agentic Coding')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ARTICLE SECTION 2: ARCHITECTURE & CPU CORES -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    All-New Fusion Architecture
+                </h2>
+
+                <p>
+                    M5 Pro and M5 Max introduce the Apple-designed Fusion Architecture, a state-of-the-art design that connects two dies into a single SoC. This brings together two third-generation 3-nanometer dies with high bandwidth and low latency using advanced packaging.
+                </p>
+
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    Apple's Fastest, Most Advanced CPU Cores
+                </h2>
+
+                <p>
+                    M5 Pro and M5 Max feature a new 18-core CPU with 6 super cores and 12 all-new performance cores. The super cores deliver industry-leading single-threaded execution speed via expanded front-end instruction decoding, an upgraded cache hierarchy, and predictive branch routing.
+                </p>
+
+                <p>
+                    Alongside these super cores, 12 newly engineered performance cores handle complex multithreaded compute tasks with exceptional thermal efficiency. Combined, they yield up to 2.5x higher multithreaded performance compared to original M1 Pro and M1 Max baselines.
+                </p>
+
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    M5 Pro: Designed to Handle Demanding Workflows
+                </h2>
+
+                <p>
+                    Targeted at data analysts, financial modelers, audio engineers, and software architects, M5 Pro pairs its 18-core CPU with an up-to-20-core GPU, supported by 307 GB/s unified memory bandwidth and up to 64GB memory capacity.
+                </p>
+            </div>
+
+            <!-- MOCKUP 2: MATLAB Wavelet Analysis / Signal Processing -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 sm:p-4 border border-[#2a2a2d] mockup-frame">
+                    <div class="bg-[#18181c] rounded-xl border border-[#333] overflow-hidden aspect-[16/10] flex flex-col font-sans">
+                        <div class="h-6 bg-[#212126] px-3 flex items-center justify-between text-[11px] text-gray-400 border-b border-[#333]">
+                            <span>MATLAB R2026b — Wavelet Analysis: El Niño and Indian Rainfall</span>
+                            <span class="text-emerald-400 font-mono text-[10px]">M5 Pro • 64GB Unified Memory</span>
+                        </div>
+                        <div class="flex-grow bg-[#0f111a] p-3 grid grid-cols-2 gap-3">
+                            <!-- Left: Wavelet Coherence Spectrogram -->
+                            <div class="bg-[#161a29] rounded-lg p-2 border border-[#2d3752] flex flex-col justify-between">
+                                <div class="text-[10px] text-cyan-300 font-bold uppercase tracking-wider">Wavelet Scalogram</div>
+                                <div class="h-32 bg-gradient-to-tr from-indigo-900 via-rose-600 to-amber-400 rounded relative overflow-hidden flex items-center justify-center">
+                                    <svg class="w-full h-full text-white/30" viewBox="0 0 200 100" preserveAspectRatio="none">
+                                        <path d="M0,50 Q25,10 50,50 T100,50 T150,50 T200,50" fill="none" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M0,70 Q50,20 100,80 T200,40" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+                                    </svg>
+                                </div>
+                                <div class="text-[9px] text-gray-400 font-mono">Signal Power Spectrum: Dominant Period 2.4 - 7.1 yrs</div>
+                            </div>
+                            <!-- Right: Computation Matrix Stats -->
+                            <div class="bg-[#161a29] rounded-lg p-2 border border-[#2d3752] flex flex-col justify-between text-[10px] font-mono">
+                                <div class="text-cyan-300 font-bold font-sans">18-Core Multithread Matrix Execution</div>
+                                <div class="space-y-1.5 text-gray-300">
+                                    <div class="flex justify-between border-b border-gray-700 pb-1">
+                                        <span>Matrix Size:</span>
+                                        <span class="text-white">100,000 x 100,000</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-gray-700 pb-1">
+                                        <span>Bandwidth:</span>
+                                        <span class="text-cyan-400 font-bold">307 GB/s</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-gray-700 pb-1">
+                                        <span>Execution Time:</span>
+                                        <span class="text-emerald-400 font-bold">0.142 seconds</span>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-600/30 text-blue-300 p-1.5 rounded text-center text-[9px]">
+                                    30% Faster than M4 Pro
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">M5 Pro and M5 Max empower engineers, scientists, researchers, and students to unlock complex computations and simulations by easily powering through massive datasets in apps like MATLAB.</p>
+                    <button onclick="downloadMedia('MATLAB Wavelet Analysis')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ARTICLE SECTION 3: M5 PRO SPECS & RAY TRACING -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <p>
+                    M5 Pro features upgraded shader cores with second-generation dynamic caching and hardware-accelerated mesh shading, yielding up to 20% faster overall graphics performance. With Apple's third-generation ray-tracing hardware, professional rendering applications see frame rates scale up to 35% faster.
+                </p>
+            </div>
+
+            <!-- MOCKUP 3: Vectorworks 3D Ray Tracing Render -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 sm:p-4 border border-[#2a2a2d] mockup-frame">
+                    <div class="bg-[#18181c] rounded-xl border border-[#333] overflow-hidden aspect-[16/10] flex flex-col font-sans">
+                        <div class="h-6 bg-[#212126] px-3 flex items-center justify-between text-[11px] text-gray-400 border-b border-[#333]">
+                            <span>Vectorworks Design Suite — 3D Architectural Visualization</span>
+                            <span class="text-cyan-400 font-mono text-[10px]">M5 Pro • Hardware Ray Tracing</span>
+                        </div>
+                        <div class="flex-grow bg-[#0a0f18] relative flex items-center justify-center p-4">
+                            <div class="w-full h-full bg-gradient-to-tr from-slate-900 via-sky-950 to-slate-800 rounded-lg border border-sky-800/40 relative overflow-hidden flex flex-col justify-end p-4">
+                                <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                                <div class="relative z-10 w-3/4 h-3/4 mx-auto bg-gradient-to-b from-sky-400/30 to-blue-600/50 backdrop-blur border-2 border-cyan-300/60 rounded-3xl p-3 flex flex-col justify-between shadow-2xl">
+                                    <div class="flex justify-between items-center text-[10px] text-cyan-200 font-mono">
+                                        <span>3D Mesh Viewport</span>
+                                        <span>Ray-Tracing: 128 Samples/px</span>
+                                    </div>
+                                    <div class="text-center font-bold text-white text-sm">Parametric Curved Pavilion Render</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">With Apple's third-generation ray-tracing engine in M5 Pro and M5 Max, users experience an up to 35 percent graphics uplift as compared to the previous generation when rendering intricate 3D designs with incredible detail.</p>
+                    <button onclick="downloadMedia('3D Ray Tracing Render')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ARTICLE SECTION 4: M5 MAX UNMATCHED CAPABILITIES -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    M5 Max: Unmatched Capabilities
+                </h2>
+
+                <p>
+                    Engineered for 3D visual effects artists, game engine developers, and machine learning researchers, M5 Max doubles GPU capacity with up to 40 cores and provides an incredible 614 GB/s unified memory bandwidth.
+                </p>
+            </div>
+
+            <!-- MOCKUP 4: 3D Fluid Particle Simulation in Houdini -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 sm:p-4 border border-[#2a2a2d] mockup-frame">
+                    <div class="bg-[#18181c] rounded-xl border border-[#333] overflow-hidden aspect-[16/10] flex flex-col font-sans">
+                        <div class="h-6 bg-[#212126] px-3 flex items-center justify-between text-[11px] text-gray-400 border-b border-[#333]">
+                            <span>SideFX Houdini FX — Quantum Fluid & Particle Dynamics</span>
+                            <span class="text-purple-400 font-mono text-[10px]">M5 Max • 40-Core GPU</span>
+                        </div>
+                        <div class="flex-grow bg-[#080511] relative flex items-center justify-center p-4">
+                            <div class="w-full h-full bg-gradient-to-tr from-purple-950 via-indigo-900 to-blue-950 rounded-lg border border-purple-500/30 relative overflow-hidden flex items-center justify-center">
+                                <div class="w-48 h-48 rounded-full bg-gradient-to-r from-amber-500 via-pink-500 to-indigo-500 blur-md opacity-80 animate-pulse"></div>
+                                <div class="absolute inset-0 flex items-center justify-center text-xs font-mono text-purple-200">
+                                    <span>50,000,000 Realtime GPU Particles</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">With M5 Max, users can explore new creative dimensions thanks to the up-to-40-core GPU and massive unified memory bandwidth to power advanced visual effects and complex simulations with amazing performance.</p>
+                    <button onclick="downloadMedia('3D Fluid Simulation')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ARTICLE SECTION 5: M5 MAX DETAILS & LM STUDIO -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <p>
+                    With support for up to 128GB unified memory, M5 Max easily holds massive Large Language Models (LLMs) like Llama 3 70B and Qwen 30B directly in memory without offloading or token bottlenecks.
+                </p>
+            </div>
+
+            <!-- MOCKUP 5: LM Studio Local LLM Inference -->
+            <div class="my-10">
+                <div class="bg-[#111113] rounded-2xl p-2 sm:p-4 border border-[#2a2a2d] mockup-frame">
+                    <div class="bg-[#18181c] rounded-xl border border-[#333] overflow-hidden aspect-[16/10] flex flex-col font-sans">
+                        <div class="h-6 bg-[#212126] px-3 flex items-center justify-between text-[11px] text-gray-400 border-b border-[#333]">
+                            <span>LM Studio v0.3.8 — Local LLM Matrix Acceleration</span>
+                            <span class="text-emerald-400 font-mono text-[10px]">M5 Max • 614 GB/s Bandwidth</span>
+                        </div>
+                        <div class="flex-grow grid grid-cols-12 bg-[#0c0d12] p-2 gap-2">
+                            <div class="col-span-5 bg-[#141620] rounded-lg p-2 border border-[#282d40] text-xs font-mono space-y-2">
+                                <div class="text-cyan-400 font-bold border-b border-gray-700 pb-1">Model Parameters</div>
+                                <div class="text-[10px] text-gray-300 space-y-1">
+                                    <div>Name: <span class="text-white">Qwen3-30B-A3B-4bit</span></div>
+                                    <div>Context: <span class="text-emerald-400">128k Tokens</span></div>
+                                    <div>Memory Usage: <span class="text-amber-300">17.31 GB / 128 GB</span></div>
+                                    <div class="pt-2 text-cyan-300 font-bold">Inference Rate:</div>
+                                    <div class="text-emerald-400 text-sm font-bold">142.8 tokens/sec</div>
+                                </div>
+                            </div>
+                            <div class="col-span-7 bg-[#141620] rounded-lg p-2 border border-[#282d40] flex flex-col justify-between text-xs">
+                                <div class="space-y-1">
+                                    <span class="text-gray-400 font-mono text-[10px]">Prompt Output</span>
+                                    <div class="bg-[#0b0d14] p-2 rounded text-[11px] text-gray-200 font-mono leading-relaxed">
+                                        Refactoring spaceship component assembly hierarchy using M5 GPU Neural Accelerators...
+                                    </div>
+                                </div>
+                                <div class="bg-emerald-500/20 text-emerald-300 p-1.5 rounded text-center text-[10px] font-semibold">
+                                    TTFT: 0.28 seconds
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-start justify-between text-[13px] text-[#86868b] leading-tight">
+                    <p class="pr-4">M5 Pro and M5 Max unleash the full potential of LLMs in LM Studio. The next-generation GPU architecture with Neural Accelerators and higher unified memory bandwidth deliver a massive increase in AI performance.</p>
+                    <button onclick="downloadMedia('LM Studio LLM Workspace')" class="p-1.5 rounded-full bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e] transition-colors flex-shrink-0" title="Download Image">
+                        <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ARTICLE SECTION 6: ADVANCED TECHNOLOGIES & ENVIRONMENT -->
+            <div class="space-y-6 text-[17px] leading-[1.52] text-[#f5f5f7] font-normal mb-10">
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    Advanced Technologies Across M5 Pro and M5 Max
+                </h2>
+
+                <p>M5 Pro and M5 Max feature a number of additional advanced technologies right on the chip, including:</p>
+
+                <ul class="list-disc pl-5 space-y-3 text-[16px]">
+                    <li>
+                        A faster <strong class="text-white">16-core Neural Engine</strong> with a higher bandwidth connection to memory to accelerate on-device AI features and Apple Intelligence.
+                    </li>
+                    <li>
+                        Apple's latest <strong class="text-white">Media Engine</strong> with support for hardware-accelerated H.264, HEVC, AV1 decode, and ProRes encode/decode engines.
+                    </li>
+                    <li>
+                        Support for <strong class="text-white">Memory Integrity Enforcement</strong> — an industry-first, always-on memory safety protection that does not compromise device performance.
+                    </li>
+                    <li>
+                        <strong class="text-white">Thunderbolt 5</strong> ports, each supported by its own custom-designed controller directly on the chip — making this the industry's most capable implementation of Thunderbolt 5.
+                    </li>
+                </ul>
+
+                <h2 class="text-2xl sm:text-[28px] font-bold text-white tracking-tight pt-6 pb-2">
+                    Apple Silicon and the Environment
+                </h2>
+
+                <p>
+                    Apple 2030 is the company's ambitious plan to be carbon neutral across its entire footprint by the end of this decade by reducing product emissions from materials, electricity, and transportation. The power-efficient performance of M5 Pro and M5 Max helps MacBook Pro meet Apple's high standards for energy efficiency, and reduces the total amount of energy consumed over the product's lifetime.
+                </p>
+            </div>
+
+            <!-- ARTICLE ACTIONS CARD -->
+            <div class="my-12 bg-[#1c1c1e] rounded-2xl p-6 border border-[#2c2c2e] space-y-4">
+                <!-- Action Row 1: Copy Text -->
+                <div class="flex items-center justify-between py-2 border-b border-[#2c2c2e] pb-4">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="type" class="w-6 h-6 text-[#86868b]"></i>
+                        <span class="text-base sm:text-lg font-semibold text-white">Text of this article</span>
+                    </div>
+                    <button id="copy-text-btn" class="px-4 py-2 bg-black hover:bg-[#2d2d2f] text-white rounded-full text-xs sm:text-sm font-semibold transition-colors flex items-center space-x-2 border border-[#333]">
+                        <span>Copy text</span>
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Action Row 2: Download Media -->
+                <div class="flex items-center justify-between py-2 pt-2">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="image" class="w-6 h-6 text-[#86868b]"></i>
+                        <span class="text-base sm:text-lg font-semibold text-white">Media in this article</span>
+                    </div>
+                    <button onclick="downloadMedia('All Press Release Assets Archive')" class="px-4 py-2 bg-black hover:bg-[#2d2d2f] text-white rounded-full text-xs sm:text-sm font-semibold transition-colors flex items-center space-x-2 border border-[#333]">
+                        <span>Download all media</span>
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FOOTNOTES LIST SECTION -->
+            <div class="mt-12 pt-8 border-t border-[#222] text-[12px] leading-relaxed text-[#86868b] space-y-3 font-normal">
+                <p>1. Testing was conducted by Apple in February 2026 using shipping competitive systems and select industry-standard benchmarks.</p>
+                <p>2. Testing was conducted by Apple in February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory; and preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory.</p>
+                <p>3. Apple Intelligence is available in beta with support for English, Danish, Dutch, French, German, Italian, Norwegian, Portuguese, Spanish, Swedish, Turkish, Vietnamese, Chinese, Japanese, and Korean.</p>
+            </div>
+
+            <!-- PRESS CONTACTS SECTION -->
+            <div class="my-12 pt-8 border-t border-[#222]">
+                <h2 class="text-2xl font-bold text-white tracking-tight mb-6">
+                    Press Contacts
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <div class="font-bold text-white">Lauren Klug</div>
+                        <div class="text-[#86868b]">Apple</div>
+                        <a href="mailto:l_klug@apple.com" class="text-[#2997ff] hover:underline">l_klug@apple.com</a>
+                    </div>
+                    <div>
+                        <div class="font-bold text-white">Andrea Schubert</div>
+                        <div class="text-[#86868b]">Apple</div>
+                        <a href="mailto:a_schubert@apple.com" class="text-[#2997ff] hover:underline">a_schubert@apple.com</a>
+                    </div>
+                </div>
+                <div class="mt-6 text-sm">
+                    <div class="font-bold text-white">Apple Media Helpline</div>
+                    <a href="mailto:media.help@apple.com" class="text-[#2997ff] hover:underline">media.help@apple.com</a>
+                </div>
+            </div>
+
+            <!-- MORE FROM APPLE NEWSROOM SECTION -->
+            <div class="my-12 pt-8 border-t border-[#222]">
+                <h2 class="text-2xl font-bold text-white tracking-tight mb-6">
+                    More from Apple Newsroom
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- News Item 1 -->
+                    <div class="bg-[#121214] rounded-2xl p-4 border border-[#222] flex flex-col sm:flex-row items-center gap-4 hover:border-[#333] transition-colors">
+                        <div class="w-full sm:w-48 h-28 bg-gradient-to-br from-indigo-900 to-purple-800 rounded-xl flex items-center justify-center p-2 text-center text-xs font-bold text-white shadow-inner">
+                            Leagues Cup 2026
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">UPDATE</span>
+                            <h3 class="text-lg font-bold text-white mt-1 hover:text-[#2997ff] transition-colors cursor-pointer">
+                                Leagues Cup kicks off tomorrow, August 4, on Apple TV
+                            </h3>
+                            <span class="text-xs text-[#86868b] block mt-2">August 3, 2026</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 2 -->
+                    <div class="bg-[#121214] rounded-2xl p-4 border border-[#222] flex flex-col sm:flex-row items-center gap-4 hover:border-[#333] transition-colors">
+                        <div class="w-full sm:w-48 h-28 bg-[#1f1f23] rounded-xl flex items-center justify-center p-2 border border-[#333]">
+                            <svg class="w-10 h-10 fill-white" viewBox="0 0 170 170">
+                                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">PRESS RELEASE</span>
+                            <h3 class="text-lg font-bold text-white mt-1 hover:text-[#2997ff] transition-colors cursor-pointer">
+                                Apple reports third quarter results
+                            </h3>
+                            <span class="text-xs text-[#86868b] block mt-2">July 30, 2026</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 3 -->
+                    <div class="bg-[#121214] rounded-2xl p-4 border border-[#222] flex flex-col sm:flex-row items-center gap-4 hover:border-[#333] transition-colors">
+                        <div class="w-full sm:w-48 h-28 bg-[#1b2230] rounded-xl flex items-center justify-center p-2 text-center text-xs font-bold text-cyan-300 border border-[#2d384e]">
+                            Apple Upgrade
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">PRESS RELEASE</span>
+                            <h3 class="text-lg font-bold text-white mt-1 hover:text-[#2997ff] transition-colors cursor-pointer">
+                                Apple Upgrade launches in the United States
+                            </h3>
+                            <span class="text-xs text-[#86868b] block mt-2">July 28, 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEWSROOM CTA BANNER -->
+            <div class="my-12 bg-[#121214] rounded-3xl p-8 text-center border border-[#222] space-y-4">
+                <div class="flex justify-center items-center space-x-2 text-xl font-bold text-white">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 170 170">
+                        <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                    </svg>
+                    <span>Newsroom</span>
+                </div>
+                <p class="text-sm text-[#86868b]">The latest news and updates, direct from Apple.</p>
+                <button class="px-6 py-2 bg-[#2d2d2f] hover:bg-[#3d3d3f] text-white rounded-full text-xs font-semibold transition-colors border border-[#444]">
+                    Read more
+                </button>
+            </div>
+
+        </article>
+    </main>
+
+    <!-- GLOBAL APPLE DIRECTORY FOOTER -->
+    <footer class="bg-[#111113] border-t border-[#222] py-12 text-xs text-[#86868b]">
+        <div class="max-w-[980px] mx-auto px-4 sm:px-6 flex flex-col space-y-8">
+            
+            <!-- Breadcrumb Trail -->
+            <div class="flex items-center space-x-2 text-[#86868b]">
+                <a href="#" class="hover:underline">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 170 170">
+                        <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                    </svg>
+                </a>
+                <span>&gt;</span>
+                <a href="#" class="hover:underline">Newsroom</a>
+                <span>&gt;</span>
+                <span class="text-white truncate">Apple debuts M5 Pro and M5 Max to supercharge...</span>
+            </div>
+
+            <!-- Multi-column Directory Links -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6 text-[11px] leading-relaxed pt-4 border-t border-[#222]">
+                <!-- Column 1 -->
+                <div class="space-y-4">
+                    <div>
+                        <span class="font-bold text-white block mb-2">Shop and Learn</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Store</a></li>
+                            <li><a href="#" class="hover:underline">Mac</a></li>
+                            <li><a href="#" class="hover:underline">iPad</a></li>
+                            <li><a href="#" class="hover:underline">iPhone</a></li>
+                            <li><a href="#" class="hover:underline">Watch</a></li>
+                            <li><a href="#" class="hover:underline">Vision</a></li>
+                            <li><a href="#" class="hover:underline">AirPods</a></li>
+                            <li><a href="#" class="hover:underline">TV & Home</a></li>
+                            <li><a href="#" class="hover:underline">AirTag</a></li>
+                            <li><a href="#" class="hover:underline">Accessories</a></li>
+                            <li><a href="#" class="hover:underline">Gift Cards</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-2">Apple Wallet</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Wallet</a></li>
+                            <li><a href="#" class="hover:underline">Apple Card</a></li>
+                            <li><a href="#" class="hover:underline">Apple Pay</a></li>
+                            <li><a href="#" class="hover:underline">Apple Cash</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="space-y-4">
+                    <div>
+                        <span class="font-bold text-white block mb-2">Account</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Manage Your Apple Account</a></li>
+                            <li><a href="#" class="hover:underline">Apple Store Account</a></li>
+                            <li><a href="#" class="hover:underline">iCloud.com</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-2">Entertainment</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Apple One</a></li>
+                            <li><a href="#" class="hover:underline">Apple TV+</a></li>
+                            <li><a href="#" class="hover:underline">Apple Music</a></li>
+                            <li><a href="#" class="hover:underline">Apple Arcade</a></li>
+                            <li><a href="#" class="hover:underline">Apple Fitness+</a></li>
+                            <li><a href="#" class="hover:underline">Apple News+</a></li>
+                            <li><a href="#" class="hover:underline">Apple Podcasts</a></li>
+                            <li><a href="#" class="hover:underline">Apple Books</a></li>
+                            <li><a href="#" class="hover:underline">App Store</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <span class="font-bold text-white block mb-2">Apple Store</span>
+                    <ul class="space-y-1">
+                        <li><a href="#" class="hover:underline">Find a Store</a></li>
+                        <li><a href="#" class="hover:underline">Genius Bar</a></li>
+                        <li><a href="#" class="hover:underline">Today at Apple</a></li>
+                        <li><a href="#" class="hover:underline">Group Reservations</a></li>
+                        <li><a href="#" class="hover:underline">Apple Camp</a></li>
+                        <li><a href="#" class="hover:underline">Apple Store App</a></li>
+                        <li><a href="#" class="hover:underline">Certified Refurbished</a></li>
+                        <li><a href="#" class="hover:underline">Apple Trade In</a></li>
+                        <li><a href="#" class="hover:underline">Financing</a></li>
+                        <li><a href="#" class="hover:underline">Carrier Deals at Apple</a></li>
+                        <li><a href="#" class="hover:underline">Order Status</a></li>
+                        <li><a href="#" class="hover:underline">Shopping Help</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div class="space-y-4">
+                    <div>
+                        <span class="font-bold text-white block mb-2">For Business</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Apple and Business</a></li>
+                            <li><a href="#" class="hover:underline">Shop for Business</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-2">For Education</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Apple and Education</a></li>
+                            <li><a href="#" class="hover:underline">Shop for K-12</a></li>
+                            <li><a href="#" class="hover:underline">Shop for College</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-2">For Healthcare</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Apple and Healthcare</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-2">For Government</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Apple and Government</a></li>
+                            <li><a href="#" class="hover:underline">Shop for Veterans and Military</a></li>
+                            <li><a href="#" class="hover:underline">Shop for State and Local Employees</a></li>
+                            <li><a href="#" class="hover:underline">Shop for Federal Employees</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Column 5 -->
+                <div class="space-y-4">
+                    <div>
+                        <span class="font-bold text-white block mb-2">Apple Values</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Accessibility</a></li>
+                            <li><a href="#" class="hover:underline">Education</a></li>
+                            <li><a href="#" class="hover:underline">Environment</a></li>
+                            <li><a href="#" class="hover:underline">Inclusion and Diversity</a></li>
+                            <li><a href="#" class="hover:underline">Privacy</a></li>
+                            <li><a href="#" class="hover:underline">Racial Equity and Justice</a></li>
+                            <li><a href="#" class="hover:underline">Supply Chain Innovation</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <span class="font-bold text-white block mb-2">About Apple</span>
+                        <ul class="space-y-1">
+                            <li><a href="#" class="hover:underline">Newsroom</a></li>
+                            <li><a href="#" class="hover:underline">Apple Leadership</a></li>
+                            <li><a href="#" class="hover:underline">Career Opportunities</a></li>
+                            <li><a href="#" class="hover:underline">Investors</a></li>
+                            <li><a href="#" class="hover:underline">Ethics & Compliance</a></li>
+                            <li><a href="#" class="hover:underline">Events</a></li>
+                            <li><a href="#" class="hover:underline">Contact Apple</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More ways to shop note -->
+            <div class="pt-4 border-t border-[#222] text-[11px]">
+                More ways to shop: <a href="#" class="text-[#2997ff] hover:underline">Find an Apple Store</a> or <a href="#" class="text-[#2997ff] hover:underline">other retailer</a> near you. Or call 1-800-MY-APPLE (1-800-692-7753).
+            </div>
+
+            <!-- Copyright and Legal -->
+            <div class="pt-2 flex flex-col sm:flex-row justify-between items-start sm:items-center text-[11px] space-y-2 sm:space-y-0 border-t border-[#222]">
+                <div>Copyright © 2026 Apple Inc. All rights reserved.</div>
+                <div class="flex flex-wrap space-x-3">
+                    <a href="#" class="hover:underline">Privacy Policy</a>
+                    <span>|</span>
+                    <a href="#" class="hover:underline">Terms of Use</a>
+                    <span>|</span>
+                    <a href="#" class="hover:underline">Sales and Refunds</a>
+                    <span>|</span>
+                    <a href="#" class="hover:underline">Legal</a>
+                    <span>|</span>
+                    <a href="#" class="hover:underline">Site Map</a>
+                </div>
+                <div>United States | Español</div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Toast Notification Widget -->
+    <div id="toast" class="toast fixed bottom-6 right-6 bg-[#2d2d2f] text-white px-5 py-3 rounded-xl border border-[#444] shadow-2xl z-50 flex items-center space-x-3">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+        <span id="toast-msg" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Toast Notification System
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Download Media Simulation
+        function downloadMedia(title) {
+            showToast(`Downloading: ${title}...`);
+        }
+
+        // Copy Text Button Action
+        document.getElementById('copy-text-btn').addEventListener('click', function() {
+            const articleText = `Apple debuts M5 Pro and M5 Max to supercharge the most demanding pro workflows\n\nMarch 3, 2026\n\nBuilt using the new Apple-designed Fusion Architecture...`;
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = articleText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            showToast('Press release copied to clipboard!');
+        });
+
+        // Search Bar Toggle Drawer
+        const searchBtn = document.getElementById('search-toggle-btn');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search-btn');
+
+        searchBtn.addEventListener('click', () => {
+            searchBar.classList.toggle('hidden');
+            if (!searchBar.classList.contains('hidden')) {
+                document.getElementById('search-input').focus();
+            }
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('hidden');
+        });
+
+        // Scroll Progress Indicator
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progress-bar').style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>

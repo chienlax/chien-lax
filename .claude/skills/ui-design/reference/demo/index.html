@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Scheduling under a dominant-enrollment proctor rule</title>
+<meta name="description" content="A demonstration report that exercises every construct the ui-design converter supports.">
+
+<!-- Resolve the theme before first paint. Without this the page flashes
+     light before the stored dark choice applies. -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('ui-design-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.3.0/index.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/monaspace-neon@5.3.0/500.css" rel="stylesheet">
+
+<!-- Syntax colours. The theme module enables exactly one of these. -->
+<link id="hljs-light" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css">
+<link id="hljs-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github-dark.min.css" disabled>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  darkMode: ['selector', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        bg:            'rgb(var(--bg) / <alpha-value>)',
+        tint:          'rgb(var(--bg-tint) / <alpha-value>)',
+        surface:       'rgb(var(--surface) / <alpha-value>)',
+        'surface-2':   'rgb(var(--surface-2) / <alpha-value>)',
+        content:       'rgb(var(--text) / <alpha-value>)',
+        muted:         'rgb(var(--text-muted) / <alpha-value>)',
+        line:          'rgb(var(--border) / <alpha-value>)',
+        'line-subtle': 'rgb(var(--border-subtle) / <alpha-value>)',
+        accent:        'rgb(var(--accent) / <alpha-value>)',
+        'accent-hover':'rgb(var(--accent-hover) / <alpha-value>)',
+        success:       'rgb(var(--success) / <alpha-value>)',
+        warning:       'rgb(var(--warning) / <alpha-value>)',
+        danger:        'rgb(var(--danger) / <alpha-value>)',
+        data1:         'rgb(var(--data-1) / <alpha-value>)',
+        data2:         'rgb(var(--data-2) / <alpha-value>)',
+        data3:         'rgb(var(--data-3) / <alpha-value>)',
+        data4:         'rgb(var(--data-4) / <alpha-value>)',
+        data5:         'rgb(var(--data-5) / <alpha-value>)',
+        data6:         'rgb(var(--data-6) / <alpha-value>)'
+      },
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        mono: ['Monaspace Neon', 'SF Mono', 'Menlo', 'Consolas', 'monospace']
+      },
+      maxWidth: { prose: '730px', breakout: '980px' },
+      borderRadius: { xl: '16px', '2xl': '20px' }
+    }
+  }
+}
+</script>
+
+<link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<!-- ── header ─────────────────────────────────────────────────────── -->
+<header class="glass-header">
+  <div class="glass-header__inner">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <button class="icon-btn toc-toggle" type="button" data-toc-toggle aria-expanded="false" aria-label="Show contents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h10"/>
+        </svg>
+      </button>
+      <a class="glass-header__brand" href="#top">Timetabling study</a>
+    </div>
+
+    <nav class="glass-header__nav" aria-label="Sections">
+      <a href="#summary">Summary</a><a href="#method">Method</a><a href="#results">Results</a><a href="#structure-of-the-coupling">Structure of the coupling</a><a href="#verification">Verification</a>
+    </nav>
+
+    <div class="glass-header__actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch theme" aria-pressed="false">
+        <svg data-icon-moon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg data-icon-sun viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="progress-bar" data-progress role="presentation"></div>
+
+<!-- ── contents rail ──────────────────────────────────────────────── -->
+<aside class="toc scroll-hidden" data-toc aria-label="Table of contents">
+  <div class="toc__label">On this page</div>
+  <div data-toc-body></div>
+</aside>
+
+<!-- ── hero ───────────────────────────────────────────────────────── -->
+<div id="top"></div>
+<section class="hero">
+  <div class="prose-col">
+    <p class="hero__eyebrow">Research report</p>
+    <h1 class="hero__title">Scheduling under a dominant-enrollment proctor rule</h1>
+    <p class="hero__dek">A per-room attribution rule couples timeslot, room, and proctor decisions, and it makes the problem measurably harder than standard examination timetabling.</p>
+    <div class="hero__rule"></div>
+    <div class="hero__meta">
+      <span class="chip">10 August 2026</span><span class="chip">12 min read</span><span class="chip">v2</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── content ────────────────────────────────────────────────────── -->
+<main id="content">
+  <article class="doc" data-toc-root>
+    <p>This page proves the converter. It uses every markdown construct the build
+script supports, so a rendering problem shows up here before it reaches a real
+report. Read it as a specimen.</p>
+<p>The study measures one question. When each room draws its proctor from the
+department with the most students in that room, how much harder does the
+schedule become? The short answer: solve time rises by a factor of four, and
+the travel objective degrades by 11 percent.<sup id="ref1"><a class="footnote-ref" href="#fn1" aria-label="Footnote 1">1</a></sup></p>
+<h2 id="summary">Summary</h2>
+<p>The report rests on three findings.</p>
+<ol>
+<li>The attribution rule removes the separability that makes room assignment
+cheap. Rooms can no longer be filled independently of the proctor pool.</li>
+<li>Per-student travel cost responds sharply to the exam horizon. A schedule
+one day shorter costs students about 8 percent more travel.</li>
+<li>A two-phase search recovers most of the loss. It reaches 97 percent of the
+single-phase objective in a quarter of the time.</li>
+</ol>
+<div class="callout callout--note"><p class="callout__title">Note</p><p>Every number on this page is synthetic. The demo report only exercises the
+page template, and no result here describes a real instance.</p>
+</div>
+<h3 id="the-rule">The rule</h3>
+<p>In each room, the department with the most students supplies the proctor.
+Ties break on the department code. The rule reads simply, and it couples three
+decision families that a standard formulation keeps apart.</p>
+<blockquote>
+<p>The rule sounds administrative. In the model it is structural: it ties the
+room variables to the proctor variables through a count that only exists
+once the timeslot is fixed.
+<cite>Section 3.2, problem description</cite></p>
+</blockquote>
+<h2 id="method">Method</h2>
+<p>The formulation extends a standard examination timetabling model with one
+attribution constraint family and one soft travel term.</p>
+<h3 id="instance-set">Instance set</h3>
+<p>Three instances come from one Vietnamese open-enrollment program.</p>
+<div class="table-wrap breakout">
+<table>
+<thead>
+<tr>
+<th>Instance</th>
+<th style="text-align:right">Students</th>
+<th style="text-align:right">Exams</th>
+<th style="text-align:right">Rooms</th>
+<th style="text-align:right">Departments</th>
+<th style="text-align:right">Horizon</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025_09_HCM</td>
+<td style="text-align:right">4,180</td>
+<td style="text-align:right">96</td>
+<td style="text-align:right">42</td>
+<td style="text-align:right">7</td>
+<td style="text-align:right">9 days</td>
+</tr>
+<tr>
+<td>2025_12_HCM</td>
+<td style="text-align:right">5,640</td>
+<td style="text-align:right">118</td>
+<td style="text-align:right">42</td>
+<td style="text-align:right">7</td>
+<td style="text-align:right">11 days</td>
+</tr>
+<tr>
+<td>2026_03_HAN</td>
+<td style="text-align:right">3,020</td>
+<td style="text-align:right">74</td>
+<td style="text-align:right">28</td>
+<td style="text-align:right">5</td>
+<td style="text-align:right">8 days</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="solver-configuration">Solver configuration</h3>
+<p>Every run uses the same budget. The seed is fixed, so a rerun reproduces the
+number exactly.</p>
+<div class="code-block breakout"><div class="code-block__head"><span>python</span><button class="copy-btn" type="button" data-copy="code" data-copy-message="Code copied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button></div><pre><code class="language-python">from ortools.sat.python import cp_model
+
+def solve(instance, seconds=180):
+    model = build_model(instance)
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = seconds
+    solver.parameters.num_workers = 8
+    solver.parameters.random_seed = 20260810
+    status = solver.Solve(model)
+    return solver, status
+</code></pre></div>
+<p>Call it from the command line with the instance name and the budget:</p>
+<div class="code-block breakout"><div class="code-block__head"><span>bash</span><button class="copy-btn" type="button" data-copy="code" data-copy-message="Code copied"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button></div><pre><code class="language-bash">python -m src.pipeline.run --instance 2025_12_HCM --seconds 180 --verify
+</code></pre></div>
+<h2 id="results">Results</h2>
+<p>Solve time grows with the attribution rule in place, and the gap widens with
+instance size.</p>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-1"></div></div><p class="figure__caption"><strong>Figure 1:</strong> The attribution rule multiplies solve time by roughly four, and the factor grows with the number of departments.</p></div>
+<p>The travel objective tells the opposite story about horizon length. A shorter
+exam period looks efficient on paper and costs students more movement.</p>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-2"></div></div><p class="figure__caption"><strong>Figure 2:</strong> Travel falls steeply until day 10 and then flattens. The two-phase search stays within 3 percent of the single-phase curve.</p></div>
+<p>Room utilisation stays close to the baseline, which shows the rule costs time
+rather than capacity.</p>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-3"></div></div><p class="figure__caption"><strong>Figure 3:</strong> Campus D stays under-used because only two departments hold exams there.</p></div>
+<h3 id="budget-split-by-phase">Budget split by phase</h3>
+<p>The search spends most of its budget proving the bound, not finding the
+incumbent.</p>
+<div class="figure breakout--full breakout"><div class="figure__body"><div id="chart-4"></div></div><p class="figure__caption"><strong>Figure 4:</strong> Proving the bound takes about 60 percent of the budget in every instance.</p></div>
+<h2 id="structure-of-the-coupling">Structure of the coupling</h2>
+<p>The attribution rule sits between the room decision and the proctor decision,
+which is why it cannot be separated out.</p>
+<div class="figure breakout"><div class="figure__body"><pre class="mermaid">flowchart TD
+    A[&quot;Exam set&quot;] --&gt; B[&quot;Timeslot assignment&quot;]
+    B --&gt; C[&quot;Room assignment&quot;]
+    C --&gt; D{&quot;Dominant enrollment&lt;br/&gt;count per room&quot;}
+    D --&gt;|&quot;majority department&quot;| E[&quot;Proctor supply&quot;]
+    D --&gt;|&quot;tie&quot;| F[&quot;Department code&lt;br/&gt;tie-break&quot;]
+    F --&gt; E
+    E --&gt; G[&quot;Feasible schedule&quot;]
+    C --&gt; H[&quot;Per-student travel&quot;]
+    H --&gt; G
+</pre></div></div>
+<p>The two-phase search reorders that chain. It fixes timeslots first, then
+solves rooms and proctors together against the fixed horizon.</p>
+<div class="figure breakout"><div class="figure__body"><pre class="mermaid">sequenceDiagram
+    participant P as Phase 1
+    participant Q as Phase 2
+    participant V as Verifier
+    P-&gt;&gt;P: Fix timeslots, relax proctors
+    P-&gt;&gt;Q: Hand over the horizon
+    Q-&gt;&gt;Q: Solve rooms and proctors jointly
+    Q-&gt;&gt;V: Submit the schedule
+    V--&gt;&gt;Q: Recount the five raw terms
+    V--&gt;&gt;P: Report the objective
+</pre></div></div>
+<h2 id="verification">Verification</h2>
+<p>Each run recounts its five raw objective terms outside the solver. A mismatch
+means the model and the evaluator disagree, and the run is discarded.</p>
+<div class="callout callout--warning"><p class="callout__title">Warning</p><p>A silent recount mismatch has appeared twice, both times from suffix
+stripping in the room identifier. Check the identifier before trusting a
+travel number.</p>
+</div>
+<p>Two checks pass on every instance in the set.</p>
+<ul>
+<li>The recount matches the solver objective to the last integer.</li>
+<li>No student takes two exams in one session, and no room is double-booked.</li>
+</ul>
+<hr>
+<p><em>Source: <code>reference/demo-report.md</code> in the <code>ui-design</code> skill. Rebuild with
+<code>python scripts/build.py reference/demo-report.md -o out/</code>.</em></p>
+
+  </article>
+  <section class="footnotes prose-col" aria-label="Footnotes"><ol><li id="fn1">The rule and its tie-break come from the program's own proctoring policy. The formulation appears in section 3.2 of the problem description. <a class="footnote-back" href="#ref1" aria-label="Back to text">&#8617;</a></li></ol></section>
+</main>
+
+<button class="to-top" type="button" data-to-top aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<div class="toast" data-toast role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+  <span data-toast-text></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
+<script src="./script.js"></script>
+
+<!-- Mermaid, themed from the same tokens and re-rendered on a switch. -->
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+const css = (name) => {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v ? `rgb(${v})` : '#888';
+};
+
+function config() {
+  return {
+    startOnLoad: false,
+    securityLevel: 'strict',
+    fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans'),
+    theme: 'base',
+    // Natural size, then scaled down by CSS if it exceeds the figure. With
+    // useMaxWidth the diagram stretches and its labels shrink to unreadable.
+    flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis', padding: 16 },
+    sequence: { useMaxWidth: false, boxMargin: 12 },
+    gantt: { useMaxWidth: false },
+    journey: { useMaxWidth: false },
+    pie: { useMaxWidth: false },
+    class: { useMaxWidth: false },
+    state: { useMaxWidth: false },
+    er: { useMaxWidth: false },
+    mindmap: { useMaxWidth: false },
+    timeline: { useMaxWidth: false },
+    themeVariables: {
+      background: css('--bg'),
+      primaryColor: css('--surface'),
+      primaryTextColor: css('--text'),
+      primaryBorderColor: css('--border'),
+      secondaryColor: css('--surface-2'),
+      tertiaryColor: css('--bg-tint'),
+      lineColor: css('--text-muted'),
+      textColor: css('--text'),
+      mainBkg: css('--surface'),
+      nodeBorder: css('--border'),
+      clusterBkg: css('--bg-tint'),
+      clusterBorder: css('--border-subtle'),
+      titleColor: css('--text'),
+      // --surface, not --bg: a diagram sits inside a figure card, so an edge
+      // label painted with the page background shows as a box against it.
+      edgeLabelBackground: css('--surface'),
+      pie1: css('--data-1'), pie2: css('--data-2'), pie3: css('--data-3'),
+      pie4: css('--data-4'), pie5: css('--data-5'), pie6: css('--data-6'),
+      cScale0: css('--data-1'), cScale1: css('--data-2'), cScale2: css('--data-3'),
+      actorBkg: css('--surface'), actorBorder: css('--border'), actorTextColor: css('--text'),
+      signalColor: css('--text-muted'), signalTextColor: css('--text'),
+      labelBoxBkgColor: css('--surface'), labelTextColor: css('--text'),
+      noteBkgColor: css('--bg-tint'), noteTextColor: css('--text'), noteBorderColor: css('--border'),
+      taskBkgColor: css('--data-1'), taskTextColor: css('--text'),
+      gridColor: css('--border-subtle'), sectionBkgColor: css('--bg-tint')
+    }
+  };
+}
+
+async function draw() {
+  const blocks = document.querySelectorAll('pre.mermaid, div.mermaid');
+  if (!blocks.length) return;
+  blocks.forEach((b) => {
+    if (!b.dataset.src) b.dataset.src = b.textContent.trim();
+    b.textContent = b.dataset.src;
+    b.removeAttribute('data-processed');
+  });
+  mermaid.initialize(config());
+  await mermaid.run({ nodes: blocks });
+}
+
+draw();
+document.addEventListener('themechange', draw);
+</script>
+
+<script src="https://unpkg.com/lucide@0.454.0"></script>
+<script>if (window.lucide) window.lucide.createIcons();</script>
+<script>
+UI.renderChart('#chart-1', {"type": "groupedBar", "title": "Solve time to a 2 percent gap", "subtitle": "Lower is better. 180 second budget, 8 workers.", "categories": ["2026_03_HAN", "2025_09_HCM", "2025_12_HCM"], "unit": "s", "series": [{"name": "Baseline", "values": [11, 24, 38]}, {"name": "With attribution rule", "values": [38, 96, 172]}]});
+UI.renderChart('#chart-2', {"type": "line", "title": "Per-student travel against horizon length", "subtitle": "Mean kilometres per student, 2025_12_HCM.", "categories": ["7 d", "8 d", "9 d", "10 d", "11 d", "12 d"], "unit": " km", "smooth": true, "series": [{"name": "Single phase", "values": [46.2, 41.8, 38.4, 35.9, 34.6, 34.1]}, {"name": "Two phase", "values": [48.0, 43.1, 39.5, 36.8, 35.4, 34.9]}]});
+UI.renderChart('#chart-3', {"type": "bar", "title": "Room utilisation by campus", "horizontal": true, "unit": "%", "categories": ["Campus A", "Campus B", "Campus C", "Campus D"], "series": [{"name": "Utilisation", "values": [92, 87, 78, 61]}]});
+UI.renderChart('#chart-4', {"type": "stackedBar", "title": "Budget split by search phase", "unit": "s", "categories": ["2026_03_HAN", "2025_09_HCM", "2025_12_HCM"], "series": [{"name": "First incumbent", "values": [4, 9, 14]}, {"name": "Improvement", "values": [12, 31, 48]}, {"name": "Proving the bound", "values": [22, 56, 110]}]});
+</script>
+</body>
+</html>

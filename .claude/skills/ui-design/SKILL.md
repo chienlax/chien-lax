@@ -1,240 +1,146 @@
 ---
 name: ui-design
 description: >-
-  Builds premium web UIs using an Apple HIG-inspired design system with Catppuccin
-  color palette, fluid typography, Every Layout CSS primitives, and interactive
-  components. Use when creating HTML/CSS pages, dashboards, documentation sites,
-  or any web interface that needs a polished, accessible design.
+  Builds HTML pages in an Apple-derived design system: one light and dark token set, a 52px glass header, a collapsible left table of contents, a 730px reading column with adaptive figure breakout, a data-driven chart renderer, and themed Mermaid diagrams. Includes a markdown-to-page converter for research reports. Use when creating any HTML page, report, dashboard, or documentation site.
 ---
 
-# UI Design System
+# ui-design
 
-Apple HIG structure + Catppuccin colors + Every Layout primitives.
-Latte (light) ↔ Mocha (dark). All colors flow from `--ctp-*` CSS variables.
+<!-- register-exempt: BOLD-FIRST-BULLET SWE-JARGON UNDEFINED-ACRONYM -->
+<!-- A routing file: it names its own resource files, and CSS, HTML, SVG, CDN,
+     and the filenames are standard terms. Skill files use bold lead-in
+     bullets by house convention. -->
 
-## Quick Start
+The system comes from six Apple pages: four Apple Machine Learning Research
+articles and two Apple Newsroom press releases. The kit fuses the two families
+into one page shape. Sources are in [reference/](reference/).
 
-```html
-<!DOCTYPE html>
-<html lang="en" data-theme="auto">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <!-- Content here -->
-  <script src="./script.js"></script>
-</body>
-</html>
+## Two ways to build a page
+
+**A markdown report.** Write the report, then run the converter. This is the
+common path.
+
+```bash
+python .claude/skills/ui-design/scripts/build.py report.md -o out/
+open out/index.html
 ```
 
-## Design Philosophy
+**A hand-built page.** Copy `assets/template.html`, `assets/style.css`, and
+`assets/script.js` into the output directory. Replace the `{{...}}` fields and
+write the body with the component markup from [COMPONENTS.md](COMPONENTS.md).
 
-Four HIG principles guide every decision:
+Both paths produce three files: `index.html`, `style.css`, `script.js`.
 
-- **Clarity** — Legible at any size. High-contrast text. Icons express one concept. Every link describes its destination. Every heading announces its section.
-- **Deference** — Typography is the hero. UI chrome recedes. No decorative textures. Whitespace carries visual groups.
-- **Depth** — Spatial layers via shadows, sticky navs, translucent backdrops. Smooth transitions reinforce spatial understanding.
-- **Consistency** — Same heading hierarchy, code-block treatment, link color, and interaction patterns on every page.
+## Rules that decide the look
 
-From Dieter Rams: "Less, but better." Grayscale-first layout, one font family, one accent color, obsessive micro-state attention.
+1. **One token set, two themes.** Every colour is a CSS custom property with a
+   light value and a dark value. No component rule names a hex value. Change a
+   token, change the page.
+2. **The reading column is 730px.** Body text is 17px on a 1.6 line height,
+   about 76 characters per line. No block inside it has its own side
+   padding, so a list marker, a callout border, or a table card lines up with
+   plain paragraph text at the same edge.
+3. **A figure claims the width it needs.** It grows to 980px maximum, centres
+   in the space to the right of the contents rail, and never slides under it.
+   Its caption returns to 730px.
+4. **The header is 52px and dark in both themes.** Glass blur, one hairline
+   progress bar under it.
+5. **The contents rail is fixed to the left gutter.** It never pushes the
+   prose, so a page with a rail lines up with a page without one.
+6. **Type is Inter. Code is Monaspace Neon.** No other family appears.
+7. **Motion stops for a reader who asks it to stop.** Every animation sits
+   behind `prefers-reduced-motion`.
+8. **Math keeps its source.** The converter pulls every `$...$` and `$$...$$`
+   span out before the markdown parse and puts it back afterwards, because
+   markdown-it strips the backslash in front of punctuation and would corrupt
+   the LaTeX. KaTeX renders it in the browser.
+9. **A reader can mark up the page.** Selecting text raises a highlighter with
+   four colours and an optional note. Highlights are stored per page in the
+   browser.
 
-## Color Architecture
+## File map
 
-### How it works
+| Need | File |
+|---|---|
+| Colour values, type scale, spacing, radius, shadow, the theme mechanism | [DESIGN-TOKENS.md](DESIGN-TOKENS.md) |
+| Page frame, header, hero, columns, breakout, contents rail, responsive rules | [LAYOUT.md](LAYOUT.md) |
+| Prose elements, callouts, cards, buttons, toast, tabs, mockups | [COMPONENTS.md](COMPONENTS.md) |
+| `renderChart` API, chart types, tables, stat tiles, code blocks | [DATA-VISUALIZATION.md](DATA-VISUALIZATION.md) |
+| Mermaid theming and diagram authoring rules | [DIAGRAMS.md](DIAGRAMS.md) |
+| Reader text highlighting, notes, and the record format | [HIGHLIGHTS.md](HIGHLIGHTS.md) |
+| Front matter, fence handling, math delimiters, the converter contract | [MARKDOWN-PIPELINE.md](MARKDOWN-PIPELINE.md) |
+| Defects in the source pages and how this kit avoids them | [PITFALLS.md](PITFALLS.md) |
 
-1. `--ctp-*` variables define the full Catppuccin palette (Latte light / Mocha dark)
-2. Semantic tokens reference `--ctp-*`: `--surface`, `--text-primary`, `--accent`, etc.
-3. Dark mode only remaps the `--ctp-*` palette — semantic tokens auto-resolve
+## Kit contents
 
-### Key semantic tokens
+```
+ui-design/
+  assets/
+    style.css        the whole system: tokens, frame, document, components
+    script.js        8 runtime modules, public surface is window.UI
+    template.html    the page shell, with {{FIELD}} placeholders
+  scripts/
+    build.py         markdown report -> page
+  reference/
+    demo-report.md   a fixture that exercises every construct
+    *.html           the six Apple source pages
+```
 
-| Token | Maps to | Usage |
+## Dependencies
+
+Every page loads seven pinned resources. All of them need network access when
+the page opens.
+
+| Resource | Version | Purpose |
 |---|---|---|
-| `--surface` | `--ctp-base` | Page background |
-| `--surface-raised` | `--ctp-surface0` | Cards, hover states |
-| `--text-primary` | `--ctp-text` | Body, headings |
-| `--text-secondary` | `--ctp-subtext1` | Supporting text |
-| `--text-muted` | `--ctp-overlay1` | Labels, captions |
-| `--accent` | `--ctp-blue` | Links, primary buttons |
-| `--accent-focus` | `--ctp-lavender` | Focus rings |
-| `--color-success` | `--ctp-green` | Success states |
-| `--color-warning` | `--ctp-yellow` | Warning states |
-| `--color-danger` | `--ctp-red` | Destructive actions |
-| `--border` | `--ctp-surface1` | Borders, separators |
-| `--accent-dim` | Blue 14% opacity | Accent backgrounds |
+| `cdn.tailwindcss.com` | 3.4.17 | utility classes for hand-built markup |
+| Google Fonts | Inter 400 to 700 | all text |
+| `@fontsource/monaspace-neon` | 5.3.0 | code only |
+| `mermaid` | 11 | diagrams |
+| `highlight.js` | 11.10.0 | syntax colours, two themes |
+| `lucide` | 0.454.0 | icons |
+| `KaTeX` | 0.16.11 | math, with the auto-render extension |
 
-### Accent color roles
+The converter needs `markdown-it-py` and `PyYAML`. Nothing else.
 
-- **Blue** — Links, primary buttons, active states
-- **Lavender** — Focus rings, active nav border (distinct from Blue)
-- **Green/Yellow/Red** — Status: success, warning, danger
-- **Mauve** — Keywords, callout variant, logo accent
-- **"On Accent" text** — Always use `var(--ctp-base)` on colored backgrounds
+## The runtime surface
 
-For complete hex values: See [DESIGN-TOKENS.md](DESIGN-TOKENS.md)
-For color role mapping details: See [STYLE-GUIDE.md](STYLE-GUIDE.md)
-
-## Typography
-
-### Font stacks
-
-```css
---font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
---font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+```js
+UI.renderChart('#target', spec)   // see DATA-VISUALIZATION.md
+UI.showToast('Copied')            // announced with aria-live
+UI.setTheme('dark')               // 'light' | 'dark' | 'system'
+UI.getTheme()                     // resolved 'light' | 'dark'
+UI.buildToc()                     // rebuild the rail after adding headings
+UI.highlights.list()              // -> the array of highlight records for this page
+UI.highlights.clear()             // removes every highlight from the page and storage
+UI.highlights.exportJSON()        // copies pretty-printed JSON, returns the JSON string
+UI.highlights.importJSON(text)    // parses text, replaces the stored set, re-renders
+document.addEventListener('themechange', fn)
 ```
 
-### Fluid type scale (clamp-based)
+## Check the result
 
-| Token | Range | Line-height | Use |
-|---|---|---|---|
-| `--step-4` | 2.07–2.75 rem | 1.15 | h1 display |
-| `--step-3` | 1.73–2.20 rem | 1.2 | h2 page heading |
-| `--step-2` | 1.44–1.76 rem | 1.25 | h3 section |
-| `--step-1` | 1.20–1.41 rem | 1.3 | h4 subsection |
-| `--step-0` | 1.00–1.13 rem | 1.6 | Body text |
-| `--step--1` | 0.83–0.94 rem | 1.5 | Small/caption |
+Render the page before you call it done.
 
-### Rules
-
-- Body: 15–25px (Butterick). Measure: `--measure: 65ch`
-- Hierarchy: weight + color before size. Headings get negative tracking.
-- Single font family. Mono only for code.
-
-## Space Scale
-
-Eight fluid steps on an 8-point grid. All use `clamp()`.
-
-| Token | Range |
-|---|---|
-| `--space-3xs` | 0.25–0.31 rem |
-| `--space-2xs` | 0.50–0.63 rem |
-| `--space-xs` | 0.75–0.94 rem |
-| `--space-s` | 1.00–1.25 rem |
-| `--space-m` | 1.50–1.88 rem |
-| `--space-l` | 2.00–2.50 rem |
-| `--space-xl` | 3.00–3.75 rem |
-| `--space-2xl` | 4.00–5.00 rem |
-
-Never use arbitrary values — pick the nearest step.
-
-## Layout Primitives
-
-### Every Layout composable patterns
-
-- **Stack** — Vertical rhythm: `.stack > * + * { margin-block-start: var(--stack-gap) }`
-  - Variants: `.stack--s`, `.stack--l`, `.stack--xl`
-- **Cluster** — Wrapping flex row: `.cluster { display: flex; flex-wrap: wrap; gap: var(--space-s) }`
-- **Sidebar** — Two columns without breakpoints. Below threshold, stacks vertically.
-
-### Three-column docs grid
-
-```css
-.docs {
-  display: grid;
-  grid-template-columns: minmax(0, 18.5rem) minmax(0, 1fr) minmax(0, 14rem);
-  gap: var(--space-xl);
-}
-/* Collapses at 60rem */
-@media (max-width: 60rem) { .docs { grid-template-columns: 1fr; } }
+```bash
+chromium --headless --disable-gpu --no-sandbox --hide-scrollbars \
+  --window-size=1440,3000 --virtual-time-budget=15000 \
+  --screenshot=shot.png "file://$PWD/out/index.html"
 ```
 
-For complete layout CSS: See [LAYOUT.md](LAYOUT.md)
+`--screenshot` captures the window, not the whole scrollable page. Set the
+window height to the page height, or the shot stops part way down. A report
+with four sections and three figures runs 6000px to 8000px. To read one band
+of a long page, hide the rest with a temporary style block:
 
-## Components
-
-| Component | Classes | Notes |
-|---|---|---|
-| **Buttons** | `.btn--primary/secondary/ghost/danger` | 5 states; spring animation on active |
-| **Badges** | `.badge--default/accent/success/warning` | Pill-shaped with tinted backgrounds |
-| **Callouts** | `.callout--info/mauve` | Icon + body flex layout |
-| **Code Blocks** | `.code-block` | Filename header, copy btn, focal/dim lines |
-| **Data Tables** | `.data-table` | Mono first-column, semantic borders |
-| **Search** | `.search-wrapper` + `.search-input` | Pill shape, Lavender focus glow |
-| **Segmented** | `.segmented-control` | Sliding pill indicator (spring) |
-| **Tabs** | `.tabs-nav` + `.tabs-content` | Sliding underline + fade-in panes |
-| **Switches** | `.switch` | iOS-style toggle with spring thumb |
-| **Checkboxes** | `.checkbox-label` + `.custom-checkbox__box` | Spring transition |
-| **Radios** | `.radio-label` + `.custom-radio__circle` | Animated dot |
-| **Slider** | `.range-slider` | Dynamic gradient fill |
-| **Toasts** | `.toast` in `.toast-container` | Spring entry, auto-dismiss progress bar |
-| **Glow Cards** | `.glow-card` | Cursor-tracking border glow (Linear style) |
-
-For HTML patterns + CSS details: See [COMPONENTS.md](COMPONENTS.md)
-
-## Dark Mode
-
-### Implementation
-
-1. Set `<html data-theme="auto">` and `<meta name="color-scheme" content="light dark">`
-2. Dark mode remaps only the `--ctp-*` palette variables (Latte → Mocha)
-3. All semantic tokens auto-resolve — no overrides needed
-4. Toggle via `data-theme="light"`, `data-theme="dark"`, or `data-theme="auto"`
-
-### Key rule
-
-Dark mode is NOT color inversion. It is Catppuccin Mocha — a deep blue-grey (`#1e1e2e`), never pure black. Think "lights dimmed," not "flipped inside out."
-
-## Accessibility
-
-- **Contrast**: WCAG AA minimum (4.5:1). Text on Base is ~12:1 in both Latte and Mocha
-- **Focus rings**: Lavender via `:focus-visible` — distinct from Blue action color
-- **Motion**: `prefers-reduced-motion` disables all transitions
-- **Keyboard**: All interactive elements reachable by Tab
-- **Screen readers**: Semantic HTML + `aria-label` on icon-only buttons
-- **Skip link**: First Tab target jumps to `#main`
-- **Font sizes**: All in `rem` — scales with browser text setting
-- **On Accent**: Text on colored backgrounds uses `var(--ctp-base)`
-
-## Data Visualization
-
-Inline SVG charts following Apple's charting rules:
-- Never rely on color alone — pair with shapes/patterns
-- Gridlines: dashed, thin, semi-transparent
-- Available: activity rings, donut charts, line charts, bar charts, heatmaps
-
-For chart patterns: See [DATA-VISUALIZATION.md](DATA-VISUALIZATION.md)
-
-## Animation & Easing
-
-```css
---ease:        cubic-bezier(0.16, 1, 0.3, 1);       /* standard ease-out */
---ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* Apple-like bounce */
---duration:    250ms;
+```bash
+python - <<'EOF'
+import pathlib
+p = pathlib.Path('out/index.html'); h = p.read_text()
+css = "<style>.hero{display:none}.doc>*{display:none}#results,#results~*{display:block}</style>"
+pathlib.Path('out/band.html').write_text(h.replace('</head>', css + '</head>'))
+EOF
 ```
 
-- Border radii: `--radius-s: 4px`, `--radius-m: 8px`, `--radius-l: 12px`, `--radius-pill: 999px`
-
-## Reference Files
-
-| File | When to read |
-|---|---|
-| [DESIGN-TOKENS.md](DESIGN-TOKENS.md) | Need exact token values, palette hex codes, or clamp formulas |
-| [COMPONENTS.md](COMPONENTS.md) | Building interactive elements — buttons, tabs, toasts, etc. |
-| [LAYOUT.md](LAYOUT.md) | Setting up page structure, navigation, responsive grid |
-| [DATA-VISUALIZATION.md](DATA-VISUALIZATION.md) | Creating charts, dashboards, data displays |
-| [STYLE-GUIDE.md](STYLE-GUIDE.md) | Color role decisions, dark mode rules, typography conventions |
-
-The `resources/` subfolder contains full CSS code blocks for copy-paste when bootstrapping new projects:
-
-| File | Content |
-|---|---|
-| [resources/tokens-css.md](resources/tokens-css.md) | Complete `:root` and dark mode CSS variable definitions |
-| [resources/components-css.md](resources/components-css.md) | Full CSS for all interactive components |
-| [resources/layout-css.md](resources/layout-css.md) | Full layout shell, nav, TOC, breadcrumb CSS |
-| [resources/charts-examples.md](resources/charts-examples.md) | Complete SVG chart HTML + JS examples |
-| [resources/palette-full.md](resources/palette-full.md) | Every Catppuccin Latte + Mocha hex value |
-
-## Workflow
-
-1. **Tokens first** — Start with the CSS variables from `resources/tokens-css.md`
-2. **Layout** — Apply the docs grid or layout primitives from LAYOUT.md
-3. **Components** — Add interactive elements from COMPONENTS.md
-4. **Content** — Write semantic HTML with proper heading hierarchy
-5. **Dark mode** — Verify both themes toggle correctly
-6. **Accessibility** — Tab through everything, check contrast, test `prefers-reduced-motion`
+To see the dark theme, copy the page and set `data-theme="dark"` on the `html`
+element. The checklist is at the end of [PITFALLS.md](PITFALLS.md).

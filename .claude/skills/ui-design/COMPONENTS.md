@@ -1,240 +1,288 @@
-# Components Reference
+# Components
 
-## Contents
+<!-- register-exempt: BOLD-FIRST-BULLET SWE-JARGON UNDEFINED-ACRONYM -->
+<!-- A markup catalogue: HTML, CSS, ARIA, SVG, and the class names are
+     standard terms. -->
 
-- Buttons
-- Badges
-- Callouts
-- Code blocks
-- Data tables
-- Search field
-- Segmented switcher
-- Tabs
-- Toggle switches
-- Checkboxes & radios
-- Range slider
-- Toast notifications
-- Glow cards (Linear/Vercel style)
+Copy-paste markup for every component in the kit. Data components are in
+[DATA-VISUALIZATION.md](DATA-VISUALIZATION.md). Diagrams are in
+[DIAGRAMS.md](DIAGRAMS.md).
 
-For full CSS code: See [resources/components-css.md](resources/components-css.md)
+The converter emits most of this automatically. Reach for the markup when you
+build a page by hand.
 
-## Buttons
+## Prose
 
-Four variants, five states each (default, hover, focus-visible, active, disabled).
+Inside `.doc`, plain elements are already styled. Write `<p>`, `<h2>`, `<ul>`,
+`<hr>` with no classes.
+
+```html
+<article class="doc" data-toc-root>
+  <p class="lead">A larger opening paragraph, 18 to 22px.</p>
+  <p>Body text at 17px on a 1.6 line height.</p>
+  <h2>A section</h2>
+  <h3>A subsection</h3>
+  <ul><li>An item</li></ul>
+</article>
+```
+
+An H2 and an H3 gain an id and a hover-revealed `#` anchor from `script.js`.
+
+### Pull quote
+
+```html
+<blockquote>
+  <p>The quoted sentence, in italic at 19px.</p>
+  <cite>Section 3.2, problem description</cite>
+</blockquote>
+```
+
+### Callout
+
+Four tones. Each one takes a 3px left edge in its own colour.
+
+```html
+<div class="callout callout--note">
+  <p class="callout__title">Note</p>
+  <p>The body, at 15px.</p>
+</div>
+```
+
+`callout--note` blue, `callout--tip` green, `callout--warning` amber,
+`callout--danger` red. In markdown, write `> [!NOTE]` as the first line of a
+blockquote.
+
+### Figure and caption
+
+```html
+<div class="figure breakout">
+  <div class="figure__body">
+    …the figure…
+  </div>
+  <p class="figure__caption"><strong>Figure 3:</strong> What it shows.</p>
+</div>
+```
+
+Add `figure__body--plain` to drop the card, which suits a photograph. The
+caption returns to the 730px measure on its own.
+
+The converter's markdown `![alt](src)` syntax always emits `figure__body--plain`,
+since a pasted image is normally a photograph. A diagram or a chart image
+needs the card kept, so write the raw HTML block above directly instead of
+markdown image syntax — see the pre-rendered-diagram pattern in
+`PITFALLS.md`'s "Five or more Mermaid diagrams on one page" section for a
+worked example with a light/dark image pair.
+
+### Footnote
+
+```html
+<p>A claim.<sup id="ref1"><a class="footnote-ref" href="#fn1">1</a></sup></p>
+
+<section class="footnotes prose-col">
+  <ol>
+    <li id="fn1">The note. <a class="footnote-back" href="#ref1">&#8617;</a></li>
+  </ol>
+</section>
+```
+
+Jumping to a footnote flashes its background for two seconds. Only one of the
+six source pages wires the whole loop. Two of them leave the numbers inert.
+
+### Citation cross-link
+
+Links a body mention of an author to that paper's row in a Sources table. Use
+this on a report with a Sources or References table, so a reader mid-paragraph
+can jump straight to the full entry instead of scanning down.
+
+```html
+<p>…Talluri and van Ryzin's
+  <a class="citation-link" id="citeref-talluri-van-ryzin-2004" href="#src-talluri-van-ryzin-2004">(2004)</a>
+  concept of an efficient set…</p>
+
+<table>
+  <tr>
+    <td><a id="src-talluri-van-ryzin-2004" class="citation-anchor">Talluri and van Ryzin 2004</a>
+      <a class="citation-back" href="#citeref-talluri-van-ryzin-2004" aria-label="Back to text">&#8617;</a></td>
+    <td>…</td>
+  </tr>
+</table>
+```
+
+Rules:
+
+- One `src-{slug}` anchor per paper, on its Sources-table row. If the report
+  has both a per-section reading list and a Sources table, anchor the Sources
+  table only — one canonical target per paper.
+- One `citeref-{slug}` id per paper, on its first prose mention. A later
+  mention of the same paper links to the same `#src-{slug}` target but has
+  no `id`, so the back-arrow always returns to the first mention.
+- `{slug}` is kebab-case surname(s) and year, matching the footnote system's
+  `ref{n}`/`fn{n}` pair in shape: `train-2009`, `talluri-van-ryzin-2004`.
+- `class="citation-anchor"` has no `href`, so it is a jump target, not a
+  link. `.doc a.citation-anchor` overrides the kit's blanket `.doc a` color
+  rule back to plain text, since an unclickable blue span reads as a dead
+  link. The extra `.doc a` prefix is required: a bare `.citation-anchor`
+  loses the specificity fight against `.doc a`, the same trap `PITFALLS.md`
+  already documents for the `fig-dark` swap.
+- The citation-link color reuses `--accent`, the same blue the footnote
+  numbers use, so both link types read as one system.
+
+Jumping to a `src-` target flashes its background the same way a footnote
+jump does — `initJumpFlash` in `script.js` matches both `#fn` and `#src-`
+hashes.
+
+## Cards and surfaces
+
+```html
+<div class="card">A card on the tinted surface.</div>
+<div class="card card--nested">A card inside a card.</div>
+<div class="card card--interactive">Lifts on hover.</div>
+```
+
+### Comparison panel
+
+Two columns above 768px, one below.
+
+```html
+<div class="figure breakout">
+  <div class="figure__body">
+    <div class="compare">
+      <div class="card card--nested">
+        <p class="compare__label">Low resolution</p>
+        <p>The answer text.</p>
+        <p class="verdict verdict--fail">✕ Incorrect</p>
+      </div>
+      <div class="card card--nested">
+        <p class="compare__label">High resolution</p>
+        <p>The answer text.</p>
+        <p class="verdict verdict--pass">✓ Correct</p>
+      </div>
+    </div>
+  </div>
+  <p class="figure__caption"><strong>Figure 1:</strong> The comparison.</p>
+</div>
+```
+
+### Mockup frame
+
+The device and application chrome from the newsroom pages.
+
+```html
+<div class="mockup breakout">
+  <div class="mockup__screen">
+    <div class="mockup__chrome">
+      <span class="mockup__dot" style="background:#ff5f57"></span>
+      <span class="mockup__dot" style="background:#febc2e"></span>
+      <span class="mockup__dot" style="background:#28c840"></span>
+    </div>
+    <div style="padding:1rem">…the screen…</div>
+  </div>
+</div>
+```
+
+The three traffic-light dots are the only place a literal hex belongs. They
+are a real object, not a themed surface.
+
+## Controls
+
+### Buttons
 
 ```html
 <button class="btn btn--primary">Primary</button>
-<button class="btn btn--secondary">Secondary</button>
-<button class="btn btn--ghost">Ghost</button>
-<button class="btn btn--danger">Danger</button>
-<button class="btn btn--primary" disabled>Disabled</button>
+<button class="btn btn--outline">Outline</button>
+<button class="btn btn--quiet">Quiet</button>
+<button class="icon-btn" aria-label="Copy link">…svg…</button>
 ```
 
-| Variant | Background | Text Color | Border |
-|---|---|---|---|
-| `btn--primary` | `--ctp-blue` | `--ctp-base` | `--ctp-blue` |
-| `btn--secondary` | `--surface-card` | `--text-primary` | `--border` |
-| `btn--ghost` | transparent | `--text-secondary` | transparent |
-| `btn--danger` | `--color-danger` | `--ctp-base` | `--color-danger` |
+Every button is a pill, which matches all six source pages. An icon button is
+32px and round, and it always needs an `aria-label`.
 
-Hover darkens via `color-mix(84%, --ctp-crust)`. Active: `scale(0.96)`. Disabled: `opacity: 0.4`.
-Transition uses `--ease-spring` for physics-like feedback.
-
-## Badges
+### Segmented control
 
 ```html
-<span class="badge badge--default">Default</span>
-<span class="badge badge--accent">Accent</span>
-<span class="badge badge--success">Success</span>
-<span class="badge badge--warning">Warning</span>
-```
-
-Pill-shaped (`border-radius: var(--radius-pill)`). Tinted background at 12% opacity with 30% border.
-
-## Callouts
-
-```html
-<div class="callout callout--info">
-  <span class="callout__icon" aria-hidden="true">💡</span>
-  <div class="callout__body">
-    <p><strong>Title:</strong> Callout content here.</p>
-  </div>
+<div class="segmented" data-segmented="sizes">
+  <button data-value="0.5B" data-panel="#p1" aria-selected="true">0.5B</button>
+  <button data-value="1.5B" data-panel="#p2">1.5B</button>
 </div>
 
-<div class="callout callout--mauve">
-  <span class="callout__icon callout__icon--mauve" aria-hidden="true">✨</span>
-  <div class="callout__body">
-    <p><strong>Title:</strong> Mauve variant content.</p>
-  </div>
-</div>
+<div id="p1" data-panel-group="sizes">…</div>
+<div id="p2" data-panel-group="sizes" hidden>…</div>
 ```
 
-Flex layout with `gap: var(--space-s)`. Background uses `--accent-dim` (info) or `color-mix(--ctp-mauve 10%)` (mauve).
+`script.js` wires the selection, the panel swap, and a `segmentchange` event.
+**Never ship a segmented control with no handler.** Three figures in the
+source pages look interactive and do nothing when clicked.
 
-## Code Blocks
+### Collapsible section
 
 ```html
-<div class="code-block">
-  <div class="code-block__header">
-    <span class="code-block__filename">tokens.css</span>
-    <button class="copy-btn" aria-label="Copy code">Copy</button>
-  </div>
-  <pre class="code-block__body"><code>
-<span class="code-line code-line--dim">/* dimmed context */</span>
-<span class="code-line code-line--focal">  --accent: var(--ctp-blue); /* highlighted */</span>
-<span class="code-line">  --surface: var(--ctp-base); /* normal */</span>
-  </code></pre>
-</div>
+<details>
+  <summary class="collapse__summary">
+    <svg …>▸</svg> The heading
+  </summary>
+  <p>The body.</p>
+</details>
 ```
 
-- Background: `--ctp-mantle`
-- Focal lines: Blue 10% wash + Lavender left border
-- Dim lines: `opacity: 0.35`
-- Font: `--font-mono` at `--step--1`
+### Toast
 
-## Data Tables
-
-```html
-<div style="overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-m)">
-  <table class="data-table">
-    <thead><tr><th>Token</th><th>Value</th></tr></thead>
-    <tbody>
-      <tr><td>--step-0</td><td>1.00–1.13 rem</td></tr>
-    </tbody>
-  </table>
-</div>
-```
-
-First column: mono font, Mauve color. Borders use `--separator`. Wrapping div provides border-radius.
-
-## Search Field
-
-```html
-<div class="search-wrapper">
-  <svg class="search-icon" ...><!-- search icon --></svg>
-  <input type="search" class="search-input" placeholder="Search…" aria-label="Search">
-</div>
-```
-
-Pill shape (`--radius-pill`). Focus shows Lavender border + 3px glow ring via `box-shadow`.
-
-## Segmented Switcher
-
-```html
-<div class="segmented-control" id="demoSegment">
-  <div class="segmented-control__slider" id="segmentSlider"></div>
-  <button class="segmented-control__item segmented-control__item--active" data-index="0">Tab A</button>
-  <button class="segmented-control__item" data-index="1">Tab B</button>
-  <button class="segmented-control__item" data-index="2">Tab C</button>
-</div>
-```
-
-Sliding pill indicator positioned via JS: `slider.style.transform = translate3d(${btn.offsetLeft}px, 0, 0)`.
-Recalculate on window resize. Spring easing on transitions.
-
-## Tabs
-
-```html
-<div class="tabs-nav" id="demoTabs">
-  <div class="tabs-indicator" id="tabsIndicator"></div>
-  <button class="tabs-nav__btn tabs-nav__btn--active" data-tab="tab-overview">Overview</button>
-  <button class="tabs-nav__btn" data-tab="tab-features">Features</button>
-</div>
-<div class="tabs-content tabs-content--active" id="tab-overview">Content A</div>
-<div class="tabs-content" id="tab-features">Content B</div>
-```
-
-Underline indicator slides with spring easing. Content panes fade in via `tab-fade-in` keyframes.
-
-## Toggle Switches
-
-```html
-<label class="switch" aria-label="Toggle setting">
-  <input type="checkbox" checked>
-  <span class="switch__track"><span class="switch__thumb"></span></span>
-  <span>Setting enabled</span>
-</label>
-```
-
-iOS-style. Track: `--ctp-surface1` → `--ctp-green` when checked. Thumb slides `1.25rem` with spring.
-
-## Checkboxes & Radios
-
-```html
-<label class="checkbox-label">
-  <input type="checkbox" checked>
-  <span class="custom-checkbox__box"></span>
-  <span>Option text</span>
-</label>
-
-<label class="radio-label">
-  <input type="radio" name="group" checked>
-  <span class="custom-radio__circle"></span>
-  <span>Option A</span>
-</label>
-```
-
-Checked state: `--accent` background, white checkmark/dot. Focus: Lavender ring.
-
-## Range Slider
-
-```html
-<div class="slider-container">
-  <input type="range" class="range-slider" id="slider" min="0" max="100" value="45">
-</div>
-```
-
-JS updates fill gradient: `slider.style.background = linear-gradient(to right, var(--accent) ${pct}%, var(--ctp-surface1) ${pct}%)`.
-
-## Toast Notifications
-
-```html
-<div class="toast-container" id="toastContainer"></div>
-```
-
-Spawn via JS:
+One call. The element builds itself if the page has none.
 
 ```js
-function spawnToast(type, title, msg) {
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.innerHTML = `
-    <div class="toast__content">
-      <svg class="toast__icon toast__icon--${type}" ...>...</svg>
-      <div class="toast__body">
-        <span class="toast__title">${title}</span>
-        <p class="toast__msg">${msg}</p>
-      </div>
-      <button class="toast__close" aria-label="Close">✕</button>
-    </div>
-    <div class="toast__progress"></div>`;
-  toastContainer.appendChild(toast);
-  setTimeout(() => toast.remove(), 4250);
-}
+UI.showToast('Link copied');
 ```
 
-Spring entry (`toast-in`), auto-dismiss progress bar (4s), frosted glass backdrop.
+The element sets `role="status"` and `aria-live="polite"`, so a screen reader
+announces it. No source page announces its toast.
 
-## Glow Cards
+### Copy buttons
+
+Declarative, no JavaScript to write.
 
 ```html
-<div class="glow-grid">
-  <div class="glow-card">
-    <div class="glow-card__overlay"></div>
-    <div class="glow-card__content">
-      <span class="glow-card__title">Card Title</span>
-      <p class="glow-card__desc">Description text.</p>
-    </div>
-  </div>
-</div>
+<button class="icon-btn" data-copy="link" data-copy-message="Link copied">…</button>
+<button class="copy-btn" data-copy="code">Copy</button>
+<button class="copy-btn" data-copy="#summary-text">Copy summary</button>
 ```
 
-JS tracks cursor position via `--x` and `--y` CSS custom properties. Overlay uses `radial-gradient` + mask composite for border-only glow effect.
+`data-copy="code"` copies the `<code>` inside the enclosing `.code-block`. Any
+other value is treated as a selector. The handler uses
+`navigator.clipboard.writeText` and falls back to the older path on `file://`.
 
-```js
-card.addEventListener('mousemove', (e) => {
-  const rect = card.getBoundingClientRect();
-  card.style.setProperty('--x', `${e.clientX - rect.left}px`);
-  card.style.setProperty('--y', `${e.clientY - rect.top}px`);
-});
+### Back to top
+
+```html
+<button class="to-top" data-to-top aria-label="Back to top">…svg…</button>
 ```
+
+It appears after 800px of scrolling.
+
+### Theme toggle
+
+```html
+<button class="icon-btn" data-theme-toggle aria-label="Switch theme" aria-pressed="false">
+  <svg data-icon-moon …></svg>
+  <svg data-icon-sun … style="display:none"></svg>
+</button>
+```
+
+The module swaps the icon, the label, and the `aria-pressed` state, and stores
+the choice. Charts and diagrams redraw on the `themechange` event.
+
+## Chips and status
+
+```html
+<span class="chip">12 min read</span>
+<span class="verdict verdict--pass">✓ Correct</span>
+<span class="verdict verdict--fail">✕ Incorrect</span>
+```
+
+## Accessibility rules for every component
+
+1. An icon-only button needs an `aria-label`.
+2. A decorative SVG needs `aria-hidden="true"`.
+3. Never remove a focus ring. `:focus-visible` is styled once, globally.
+4. A control that shows or hides a region needs `aria-expanded`.
+5. A transient message needs `role="status"` and `aria-live="polite"`.
+6. Headings descend one level at a time. Never pick an H3 because it looks
+   right.

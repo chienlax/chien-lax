@@ -1,0 +1,1551 @@
+/* =====================================================================
+   ui-design system stylesheet
+   Extracted from six Apple ML Research and Apple Newsroom pages.
+
+   Structure
+     1. Tokens          colour, type, space, radius, shadow, motion
+     2. Theme states    light default, system dark, forced dark
+     3. Base            reset additions, scrollbars, selection, focus
+     4. Frame           header, progress, TOC rail, hero, columns
+     5. Document        prose element styles for generated markup
+     6. Components      cards, tables, code, charts, toast, controls
+     7. Motion          keyframes and the reduced-motion escape
+
+   Every colour is a channel triplet so Tailwind opacity modifiers work:
+       --accent: 0 102 204        ->  rgb(var(--accent) / 0.5)
+   No component rule names a hex value. Change a token, change the page.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1 + 2. Tokens and theme states                                      */
+/* ------------------------------------------------------------------ */
+
+:root {
+  /* --- surfaces ---------------------------------------------------- */
+  --bg: 255 255 255;
+  --bg-tint: 245 245 247;
+  --surface: 245 245 247;
+  --surface-2: 255 255 255;
+  --surface-hover: 235 235 240;
+
+  /* --- text -------------------------------------------------------- */
+  --text: 29 29 31;
+  --text-muted: 110 110 115;
+  --text-invert: 245 245 247;
+
+  /* --- lines ------------------------------------------------------- */
+  --border: 210 210 215;
+  --border-subtle: 229 229 234;
+
+  /* --- accent ------------------------------------------------------ */
+  --accent: 0 102 204;
+  --accent-hover: 0 68 153;
+
+  /* --- state ------------------------------------------------------- */
+  --success: 48 160 88;
+  --warning: 191 120 0;
+  --danger: 209 55 55;
+
+  /* --- data series, calibrated against --surface -------------------- */
+  --data-1: 0 102 204;
+  --data-2: 0 168 143;
+  --data-3: 125 82 204;
+  --data-4: 40 165 80;
+  --data-5: 214 42 76;
+  --data-6: 191 120 0;
+
+  /* --- header glass, dark in both themes (Apple ML Research) -------- */
+  --header-bg: rgb(29 29 31 / 0.92);
+  --header-text: 245 245 247;
+  --header-text-muted: 190 190 196;
+
+  /* --- typography -------------------------------------------------- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+    'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'Monaspace Neon', 'SF Mono', SFMono-Regular, Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --text-h1: clamp(2rem, 1.42rem + 2.1vw, 2.5rem);      /* 32 -> 40 */
+  --text-h2: clamp(1.5rem, 1.32rem + 0.75vw, 1.75rem);  /* 24 -> 28 */
+  --text-h3: 1.25rem;                                    /* 20 */
+  --text-h4: 1.0625rem;                                  /* 17 */
+  --text-dek: clamp(1.125rem, 0.98rem + 0.6vw, 1.375rem);/* 18 -> 22 */
+  --text-body: 1.0625rem;                                /* 17 */
+  --text-small: 0.9375rem;                               /* 15 */
+  --text-caption: 0.8125rem;                             /* 13 */
+  --text-fine: 0.75rem;                                  /* 12 */
+
+  --leading-tight: 1.12;
+  --leading-snug: 1.38;
+  --leading-body: 1.6;
+
+  --tracking-tight: -0.022em;
+  --tracking-wide: 0.06em;
+
+  /* --- frame ------------------------------------------------------- */
+  --header-h: 52px;
+  --rail-w: 260px;
+  --prose-w: 730px;
+  --breakout-w: 980px;
+  --gutter: 1.5rem;
+
+  /* --- radius ------------------------------------------------------ */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 20px;
+
+  /* --- shadow ------------------------------------------------------ */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.07), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 12px 28px rgb(0 0 0 / 0.10);
+  --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.18);
+
+  /* --- motion ------------------------------------------------------ */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 0.15s;
+  --dur-base: 0.25s;
+  --dur-slow: 0.4s;
+
+  color-scheme: light;
+}
+
+/* Dark values live in one block, repeated for the two ways dark wins.
+   Never give a colour its only definition inside these blocks. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: 0 0 0;
+    --bg-tint: 17 17 19;
+    --surface: 29 29 31;
+    --surface-2: 45 45 47;
+    --surface-hover: 45 45 47;
+
+    --text: 245 245 247;
+    --text-muted: 134 134 139;
+    --text-invert: 29 29 31;
+
+    --border: 51 51 54;
+    --border-subtle: 34 34 36;
+
+    --accent: 41 151 255;
+    --accent-hover: 0 119 237;
+
+    --success: 48 209 88;
+    --warning: 255 214 10;
+    --danger: 255 69 58;
+
+    --data-1: 41 151 255;
+    --data-2: 45 212 191;
+    --data-3: 168 85 247;
+    --data-4: 48 209 88;
+    --data-5: 255 55 95;
+    --data-6: 255 214 10;
+
+    --header-bg: rgb(0 0 0 / 0.82);
+
+    --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.5);
+    --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.6);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 0.6);
+    --shadow-lg: 0 12px 28px rgb(0 0 0 / 0.7);
+    --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.8);
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: 0 0 0;
+  --bg-tint: 17 17 19;
+  --surface: 29 29 31;
+  --surface-2: 45 45 47;
+  --surface-hover: 45 45 47;
+
+  --text: 245 245 247;
+  --text-muted: 134 134 139;
+  --text-invert: 29 29 31;
+
+  --border: 51 51 54;
+  --border-subtle: 34 34 36;
+
+  --accent: 41 151 255;
+  --accent-hover: 0 119 237;
+
+  --success: 48 209 88;
+  --warning: 255 214 10;
+  --danger: 255 69 58;
+
+  --data-1: 41 151 255;
+  --data-2: 45 212 191;
+  --data-3: 168 85 247;
+  --data-4: 48 209 88;
+  --data-5: 255 55 95;
+  --data-6: 255 214 10;
+
+  --header-bg: rgb(0 0 0 / 0.82);
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.6);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 12px 28px rgb(0 0 0 / 0.7);
+  --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.8);
+
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Base                                                             */
+/* ------------------------------------------------------------------ */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+  scrollbar-color: rgb(var(--border)) transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* The native scrollbar, themed. The source pages leave it default. */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--border));
+  border-radius: 999px;
+  border: 3px solid rgb(var(--bg));
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--text-muted));
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* A scroller that stays scrollable with no visible bar. */
+.scroll-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+::selection {
+  background-color: rgb(var(--accent));
+  color: rgb(var(--text-invert));
+}
+:root[data-theme='dark'] ::selection,
+.on-dark ::selection {
+  color: rgb(255 255 255);
+}
+
+/* Every source page relies on the browser default ring, and two of them
+   remove it outright. This restores one visible ring everywhere. */
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Frame                                                            */
+/* ------------------------------------------------------------------ */
+
+/* --- glass header, one rule for both source families --------------- */
+.glass-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  height: var(--header-h);
+  background: var(--header-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  color: rgb(var(--header-text));
+}
+
+.glass-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: var(--breakout-w);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.glass-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  color: rgb(var(--header-text));
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.glass-header__nav {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.75rem;
+  color: rgb(var(--header-text-muted));
+}
+/* 1024px, not 768px: below that a five-item nav wraps to two lines and
+   breaks the 52px bar. */
+@media (min-width: 1024px) {
+  .glass-header__nav {
+    display: flex;
+  }
+}
+.glass-header__nav a {
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--dur-fast) ease;
+}
+.glass-header__nav a:hover,
+.glass-header__nav a[aria-current='true'] {
+  color: rgb(var(--header-text));
+}
+
+.glass-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+.icon-btn:hover {
+  background-color: rgb(255 255 255 / 0.12);
+}
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.75;
+}
+
+/* --- reading progress hairline ------------------------------------- */
+.progress-bar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  z-index: 49;
+  width: 0;
+  height: 2px;
+  background-color: rgb(var(--accent));
+  transition: width 0.1s ease-out;
+}
+
+/* --- left table of contents rail ----------------------------------- */
+.toc {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  z-index: 40;
+  display: none;
+  width: var(--rail-w);
+  height: calc(100vh - var(--header-h));
+  padding: 2rem 1rem 3rem 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: rgb(var(--bg));
+  border-right: 1px solid rgb(var(--border-subtle));
+}
+@media (min-width: 1280px) {
+  .toc {
+    display: block;
+  }
+  .toc-toggle {
+    display: none;
+  }
+}
+
+.toc__label {
+  margin-bottom: 0.75rem;
+  font-size: var(--text-fine);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: rgb(var(--text-muted));
+}
+
+.toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+/* The nested level indents past the caret column, so an H3 never lines up
+   with an H2 and read as a sibling. */
+.toc__list .toc__list {
+  margin-left: 1.375rem;
+  padding-left: 0.625rem;
+  border-left: 1px solid rgb(var(--border-subtle));
+}
+
+.toc__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+
+.toc__caret {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 26px;
+  margin-top: 1px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  transition: transform var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+.toc__caret svg {
+  width: 12px;
+  height: 12px;
+}
+.toc__caret[aria-expanded='false'] {
+  transform: rotate(-90deg);
+}
+.toc__caret:hover {
+  color: rgb(var(--text));
+}
+.toc__caret--placeholder {
+  visibility: hidden;
+  cursor: default;
+}
+
+.toc__link {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--r-sm);
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  color: rgb(var(--text-muted));
+  text-decoration: none;
+  transition: color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+}
+.toc__row > .toc__link {
+  font-weight: 500;
+  color: rgb(var(--text));
+}
+.toc__link:hover {
+  color: rgb(var(--text));
+  background-color: rgb(var(--surface));
+}
+.toc__link[aria-current='true'] {
+  color: rgb(var(--accent));
+  font-weight: 600;
+}
+
+.toc__list[hidden] {
+  display: none;
+}
+
+/* Slide-in panel below 1280px, opened from the header button. */
+.toc--drawer {
+  display: block;
+  width: min(320px, 85vw);
+  box-shadow: var(--shadow-xl);
+  transform: translateX(-100%);
+  transition: transform var(--dur-base) var(--ease-out-expo);
+}
+.toc--drawer.is-open {
+  transform: translateX(0);
+}
+.toc-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  background: rgb(0 0 0 / 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) ease;
+}
+.toc-scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- hero band ----------------------------------------------------- */
+.hero {
+  padding-top: calc(var(--header-h) + 2.5rem);
+  padding-bottom: 3rem;
+  background-color: rgb(var(--bg-tint));
+  border-bottom: 1px solid rgb(var(--border-subtle));
+}
+
+.hero__eyebrow {
+  margin-bottom: 0.75rem;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: rgb(var(--text-muted));
+}
+
+.hero__title {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+.hero__dek {
+  margin-top: 1.25rem;
+  font-size: var(--text-dek);
+  font-weight: 500;
+  line-height: var(--leading-snug);
+  letter-spacing: -0.01em;
+  color: rgb(var(--text));
+  text-wrap: pretty;
+}
+
+.hero__rule {
+  height: 1px;
+  margin: 1.75rem 0 1.25rem;
+  background-color: rgb(var(--border));
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  background-color: rgb(var(--bg));
+  font-size: var(--text-fine);
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+  white-space: nowrap;
+}
+.chip svg {
+  width: 13px;
+  height: 13px;
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+.hero__actions .icon-btn {
+  color: rgb(var(--text-muted));
+}
+.hero__actions .icon-btn:hover {
+  background-color: rgb(var(--text) / 0.06);
+  color: rgb(var(--text));
+}
+
+/* --- columns -------------------------------------------------------- */
+/* The prose column stays centred on the viewport. The fixed rail never
+   pushes it, so a page with a TOC lines up with a page without one. */
+.prose-col {
+  width: 100%;
+  max-width: var(--prose-w);
+  margin-inline: auto;
+}
+
+/* A figure declares no fixed width. It grows to what it needs, up to the
+   breakout, and centres. Tall-but-narrow content stays narrow. */
+.breakout {
+  width: fit-content;
+  min-width: min(100%, var(--prose-w));
+  max-width: min(var(--breakout-w), 92vw);
+  margin-inline: auto;
+}
+
+.breakout--full {
+  width: 100%;
+  max-width: min(var(--breakout-w), 92vw);
+}
+
+main {
+  padding-bottom: 6rem;
+}
+
+/* Above 1280px the fixed rail does not push the flow, so an auto-centred
+   child centres on the full viewport and reads as shifted left. Padding the
+   rail's width onto the flow's own containers removes the rail from the
+   available width once, here, so every centred child inside (prose blocks,
+   breakouts, figure captions) lines up without its own rail-aware rule. */
+@media (min-width: 1280px) {
+  main,
+  .hero {
+    padding-left: var(--rail-w);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Document                                                         */
+/* ------------------------------------------------------------------ */
+/* Element styles, so converted markdown needs no classes at all.
+   Hand-authored pages may still use Tailwind utilities anywhere. */
+
+.doc {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: rgb(var(--text));
+}
+
+/* The article itself sets no width. Each block claims its own, so a wide
+   figure can exceed the prose measure without leaving the flow. */
+.doc > * {
+  width: 100%;
+  max-width: var(--prose-w);
+  margin-inline: auto;
+}
+
+.doc > * + * {
+  margin-top: 1.5rem;
+}
+
+/* h2/h3/h4 carry their own margin-top unconditionally, so a heading opening
+   the article gets breathing room under the hero divider. A plain block has
+   no such rule and would otherwise sit flush against it. */
+.doc > *:first-child:not(h2, h3, h4) {
+  margin-top: 1.5rem;
+}
+
+/* A figure grows to what it needs, up to the breakout, and centres.
+   Content that is tall but narrow stays narrow. Above 1280px the rail's
+   width is already excluded from `main`'s content box (see `main, .hero`
+   above), so this same rule clears the rail without a rail-aware formula. */
+.doc > .breakout {
+  width: fit-content;
+  min-width: min(100%, var(--prose-w));
+  max-width: min(var(--breakout-w), 92vw);
+}
+.doc > .breakout--full {
+  width: 100%;
+  max-width: min(var(--breakout-w), 92vw);
+}
+
+.doc h2 {
+  margin-top: 3.5rem;
+  font-size: var(--text-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
+  scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+
+.doc h3 {
+  margin-top: 2.5rem;
+  font-size: var(--text-h3);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+
+.doc h4 {
+  margin-top: 2rem;
+  font-size: var(--text-h4);
+  font-weight: 600;
+}
+
+.doc p {
+  text-wrap: pretty;
+}
+
+.doc a {
+  color: rgb(var(--accent));
+  text-decoration: none;
+  transition: color var(--dur-fast) ease;
+}
+.doc a:hover {
+  color: rgb(var(--accent-hover));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.doc strong {
+  font-weight: 600;
+}
+
+.doc ul,
+.doc ol {
+  padding-left: 1.5rem;
+}
+.doc ul {
+  list-style: disc;
+}
+.doc ol {
+  list-style: decimal;
+}
+.doc li + li {
+  margin-top: 0.5rem;
+}
+.doc li > ul,
+.doc li > ol {
+  margin-top: 0.5rem;
+}
+
+.doc hr {
+  height: 1px;
+  /* margin-block only: a plain `margin: 3rem 0` sets margin-left/right to 0,
+     which overrides `.doc > *`'s margin-inline: auto and pins the line to
+     the left instead of centering it like every other block. */
+  margin-block: 3rem;
+  border: 0;
+  background-color: rgb(var(--border-subtle));
+}
+
+/* The heading anchor, revealed on hover. */
+.heading-anchor {
+  margin-left: 0.4rem;
+  font-weight: 400;
+  color: rgb(var(--text-muted));
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity var(--dur-fast) ease;
+}
+h2:hover > .heading-anchor,
+h3:hover > .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* --- lead paragraph ------------------------------------------------- */
+.lead {
+  font-size: var(--text-dek);
+  font-weight: 500;
+  line-height: var(--leading-snug);
+  color: rgb(var(--text));
+}
+
+/* --- pull quote (Newsroom M5) --------------------------------------- */
+.doc blockquote {
+  padding-left: 1.5rem;
+  border-left: 2px solid rgb(var(--border));
+  font-size: 1.1875rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgb(var(--text));
+}
+.doc blockquote p + p {
+  margin-top: 1rem;
+}
+.doc blockquote cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: var(--text-caption);
+  font-style: normal;
+  font-weight: 400;
+  color: rgb(var(--text-muted));
+}
+
+/* --- callout (FastVLM update box) ----------------------------------- */
+.callout {
+  padding: 1.5rem;
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-xl);
+  background-color: rgb(var(--surface));
+  font-size: var(--text-body);
+  line-height: 1.6;
+}
+.callout > * + * {
+  margin-top: 0.75rem;
+}
+.callout__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: rgb(var(--tone, var(--text-muted)));
+}
+.callout__title svg {
+  width: 15px;
+  height: 15px;
+}
+.callout--note {
+  --tone: var(--accent);
+  border-left: 3px solid rgb(var(--accent));
+}
+.callout--tip {
+  --tone: var(--success);
+  border-left: 3px solid rgb(var(--success));
+}
+.callout--warning {
+  --tone: var(--warning);
+  border-left: 3px solid rgb(var(--warning));
+}
+.callout--danger {
+  --tone: var(--danger);
+  border-left: 3px solid rgb(var(--danger));
+}
+
+/* --- figure and caption --------------------------------------------- */
+.figure {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+.figure__body {
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-2xl);
+  background-color: rgb(var(--surface));
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.figure__body--plain {
+  border: 0;
+  background: none;
+  padding: 0;
+  box-shadow: none;
+}
+.figure img,
+.figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+/* The caption always returns to the prose measure, whatever the width
+   of the figure above it. */
+.figure__caption {
+  max-width: var(--prose-w);
+  margin: 0.875rem auto 0;
+  font-size: var(--text-caption);
+  line-height: 1.5;
+  color: rgb(var(--text-muted));
+}
+.figure__caption strong {
+  color: rgb(var(--text));
+  font-weight: 600;
+}
+
+/* --- footnotes ------------------------------------------------------ */
+.footnotes {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgb(var(--border-subtle));
+  font-size: var(--text-fine);
+  line-height: 1.6;
+  color: rgb(var(--text-muted));
+}
+.footnotes ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.footnotes li {
+  scroll-margin-top: calc(var(--header-h) + 1.5rem);
+}
+.footnotes li + li {
+  margin-top: 0.75rem;
+}
+.footnote-ref {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  vertical-align: super;
+  margin-left: 0.1em;
+  color: rgb(var(--accent));
+  text-decoration: none;
+}
+.footnote-back {
+  margin-left: 0.375rem;
+  color: rgb(var(--accent));
+  text-decoration: none;
+}
+.footnote-target {
+  animation: footnote-flash 2s ease-out;
+  border-radius: var(--r-sm);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Components                                                       */
+/* ------------------------------------------------------------------ */
+
+/* --- card ------------------------------------------------------------ */
+.card {
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-xl);
+  background-color: rgb(var(--surface));
+  padding: 1.25rem;
+}
+.card--nested {
+  background-color: rgb(var(--surface-2));
+  border-radius: var(--r-lg);
+}
+.card--interactive {
+  transition: background-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+.card--interactive:hover {
+  background-color: rgb(var(--surface-hover));
+}
+
+/* --- carded table ---------------------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-lg);
+  background-color: rgb(var(--bg));
+  box-shadow: var(--shadow-xs);
+}
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  text-align: left;
+}
+.table-wrap thead th {
+  padding: 0.75rem 1rem;
+  background-color: rgb(var(--surface));
+  border-bottom: 1px solid rgb(var(--border-subtle));
+  font-weight: 600;
+  white-space: nowrap;
+}
+.table-wrap tbody td {
+  padding: 0.625rem 1rem;
+  border-top: 1px solid rgb(var(--border-subtle));
+  font-variant-numeric: tabular-nums;
+}
+.table-wrap tbody tr:nth-child(even) {
+  background-color: rgb(var(--surface) / 0.45);
+}
+.table-wrap tbody tr:hover {
+  background-color: rgb(var(--surface));
+}
+.table-wrap td[align='right'],
+.table-wrap th[align='right'] {
+  text-align: right;
+}
+.table-wrap td[align='center'],
+.table-wrap th[align='center'] {
+  text-align: center;
+}
+/* Numeric cells read better in the mono face. */
+.table-wrap .num {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* Editorial variant, for paper-style results. */
+.table-wrap--rules {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.table-wrap--rules thead th {
+  background: none;
+  border-bottom: 2px solid rgb(var(--text));
+}
+.table-wrap--rules tbody tr:nth-child(even),
+.table-wrap--rules tbody tr:hover {
+  background: none;
+}
+
+/* --- code ------------------------------------------------------------ */
+.doc :not(pre) > code {
+  padding: 0.125rem 0.375rem;
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-sm);
+  background-color: rgb(var(--surface));
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  white-space: nowrap;
+}
+
+.code-block {
+  position: relative;
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-lg);
+  background-color: rgb(var(--surface));
+  overflow: hidden;
+}
+.code-block__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
+  border-bottom: 1px solid rgb(var(--border-subtle));
+  font-family: var(--font-mono);
+  font-size: var(--text-fine);
+  color: rgb(var(--text-muted));
+}
+.code-block pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  tab-size: 2;
+}
+.code-block pre code {
+  font-family: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  white-space: pre;
+}
+/* highlight.js paints its own surface. Let the token surface show instead,
+   and keep only the syntax colours. */
+.hljs {
+  background: transparent !important;
+}
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--r-sm);
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text-muted));
+  font-family: var(--font-sans);
+  font-size: var(--text-fine);
+  cursor: pointer;
+  transition: color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+}
+.copy-btn:hover {
+  color: rgb(var(--text));
+  border-color: rgb(var(--text-muted));
+}
+.copy-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* --- buttons and controls -------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease;
+}
+.btn--primary {
+  background-color: rgb(var(--accent));
+  color: rgb(255 255 255);
+}
+.btn--primary:hover {
+  background-color: rgb(var(--accent-hover));
+}
+.btn--outline {
+  border-color: rgb(var(--text));
+  color: rgb(var(--text));
+  background: transparent;
+}
+.btn--outline:hover {
+  background-color: rgb(var(--text));
+  color: rgb(var(--bg));
+}
+.btn--quiet {
+  border-color: rgb(var(--border));
+  background-color: rgb(var(--surface));
+  color: rgb(var(--text));
+}
+.btn--quiet:hover {
+  background-color: rgb(var(--surface-hover));
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--r-md);
+  background-color: rgb(var(--bg));
+  font-size: var(--text-fine);
+  font-weight: 600;
+}
+.segmented button {
+  padding: 0.3125rem 0.75rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+.segmented button:hover {
+  color: rgb(var(--text));
+}
+.segmented button[aria-selected='true'] {
+  background-color: rgb(var(--text));
+  color: rgb(var(--bg));
+  box-shadow: var(--shadow-xs);
+}
+
+/* --- collapsible section --------------------------------------------- */
+.collapse__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.collapse__summary::-webkit-details-marker {
+  display: none;
+}
+.collapse__summary svg {
+  width: 14px;
+  height: 14px;
+  color: rgb(var(--text-muted));
+  transition: transform var(--dur-fast) ease;
+}
+details[open] > .collapse__summary svg {
+  transform: rotate(90deg);
+}
+
+/* --- stat tile -------------------------------------------------------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+.stat {
+  padding: 1.25rem;
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-lg);
+  background-color: rgb(var(--surface));
+}
+.stat__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.stat__label {
+  margin-top: 0.375rem;
+  font-size: var(--text-caption);
+  color: rgb(var(--text-muted));
+}
+.stat__delta {
+  margin-top: 0.5rem;
+  font-size: var(--text-fine);
+  font-weight: 600;
+}
+.stat__delta--up {
+  color: rgb(var(--success));
+}
+.stat__delta--down {
+  color: rgb(var(--danger));
+}
+
+/* --- comparison bar --------------------------------------------------- */
+.meter {
+  height: 10px;
+  border-radius: 999px;
+  background-color: rgb(var(--border-subtle));
+  overflow: hidden;
+}
+.meter__fill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: rgb(var(--accent));
+  transition: width var(--dur-slow) var(--ease-out-expo);
+}
+
+/* --- chart ------------------------------------------------------------ */
+.chart {
+  width: 100%;
+}
+.chart__title {
+  font-size: var(--text-h4);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+.chart__subtitle {
+  margin-top: 0.125rem;
+  font-size: var(--text-fine);
+  color: rgb(var(--text-muted));
+  text-align: center;
+}
+.chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1rem;
+  margin: 0.75rem 0 1rem;
+  font-size: var(--text-fine);
+  color: rgb(var(--text-muted));
+}
+.chart__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.chart__swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex: none;
+}
+.chart__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.chart__grid line {
+  stroke: rgb(var(--border-subtle));
+  stroke-width: 1;
+}
+.chart__axis text {
+  fill: rgb(var(--text-muted));
+  font-size: 11px;
+  font-family: var(--font-sans);
+}
+.chart__value {
+  fill: rgb(var(--text-muted));
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+.chart__bar,
+.chart__point {
+  transition: opacity var(--dur-fast) ease, transform var(--dur-fast) ease;
+  cursor: pointer;
+}
+.chart__bar:hover {
+  opacity: 0.82;
+}
+.chart__point:hover {
+  transform: scale(1.4);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.chart__tooltip {
+  position: fixed;
+  z-index: 60;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--r-sm);
+  background-color: rgb(var(--bg));
+  box-shadow: var(--shadow-md);
+  font-size: var(--text-fine);
+  color: rgb(var(--text));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-fast) ease;
+  white-space: nowrap;
+}
+.chart__tooltip.is-visible {
+  opacity: 1;
+}
+
+/* --- mermaid ---------------------------------------------------------- */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-sans);
+}
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+.mermaid:not([data-processed]) {
+  visibility: hidden;
+}
+
+/* --- mockup frame ------------------------------------------------------ */
+.mockup {
+  position: relative;
+  padding: 0.75rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--r-2xl);
+  background-color: rgb(var(--surface));
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+.mockup__chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgb(var(--border-subtle));
+}
+.mockup__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+.mockup__screen {
+  border: 1px solid rgb(var(--border-subtle));
+  border-radius: var(--r-lg);
+  background-color: rgb(var(--bg));
+  overflow: hidden;
+}
+
+/* --- toast ------------------------------------------------------------- */
+.toast {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--r-lg);
+  background-color: rgb(var(--surface));
+  color: rgb(var(--text));
+  box-shadow: var(--shadow-xl);
+  font-size: var(--text-caption);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: transform var(--dur-base) var(--ease-out-expo),
+    opacity var(--dur-base) var(--ease-out-expo);
+}
+.toast.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+.toast svg {
+  width: 16px;
+  height: 16px;
+  color: rgb(var(--success));
+}
+
+/* --- back to top -------------------------------------------------------- */
+.to-top {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  background-color: rgb(var(--surface));
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) ease, color var(--dur-fast) ease;
+}
+.to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.to-top:hover {
+  color: rgb(var(--text));
+}
+.to-top svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* --- comparison panel ---------------------------------------------------- */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .compare {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.compare__label {
+  font-size: var(--text-fine);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: rgb(var(--text-muted));
+  margin-bottom: 0.5rem;
+}
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-fine);
+  font-weight: 600;
+}
+.verdict--pass {
+  color: rgb(var(--success));
+}
+.verdict--fail {
+  color: rgb(var(--danger));
+}
+
+/* --- skip link ------------------------------------------------------------ */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  border: 1px solid rgb(var(--border));
+  border-radius: var(--r-md);
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Motion                                                           */
+/* ------------------------------------------------------------------ */
+
+@keyframes footnote-flash {
+  0% {
+    background-color: rgb(var(--accent) / 0.28);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flow-pulse {
+  0% {
+    stroke-dashoffset: 20;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* A dashed connector that reads as a direction of travel. */
+.flow-line {
+  stroke-dasharray: 6 6;
+  animation: flow-pulse 1.5s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0%,
+  100% {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+.pulse-highlight {
+  animation: pulse-ring 2.5s ease-in-out infinite;
+}
+
+/* No source page handles this. Every animation stops here. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Print                                                               */
+/* ------------------------------------------------------------------ */
+/* Plain CSS only. The Tailwind Play CDN generates classes at runtime,
+   so a `print:` utility never reaches the printer reliably. */
+
+@media print {
+  .glass-header,
+  .toc,
+  .toc-scrim,
+  .progress-bar,
+  .to-top,
+  .toast,
+  .copy-btn,
+  .hero__actions {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .hero {
+    padding-top: 0;
+    background: none;
+  }
+  .figure,
+  .table-wrap,
+  .code-block {
+    break-inside: avoid;
+  }
+  .doc a::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.75em;
+    color: #555;
+  }
+}

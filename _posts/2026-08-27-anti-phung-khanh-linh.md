@@ -55,9 +55,13 @@ Một điểm chung gợi nhắc tôi về Động Sục và cô Cẩm Lan khi n
 Post này được viết để tôi lảng tránh công việc, nhưng tôi mặc kệ vì nó vui.
 
 *"Để từng ngọn gió kéo đến khiến tóc em rối bời
+
 Ngàn điều chưa nói cho anh không sao cất lời
+
 Chỉ xin giữ mãi kí ức đánh mất trong đời
+
 Tình xa vắng
+
 Ngân khúc hát một thời."* 
 
 (Phải lòng cô đơn - Phùng Khánh Linh)

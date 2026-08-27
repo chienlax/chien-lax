@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastVLM: Efficient Vision Encoding for Vision Language Models - Apple Machine Learning Research</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            bg: '#ffffff',
+                            subtleBg: '#f5f5f7',
+                            headerBg: '#1d1d1f',
+                            cardBg: '#1d1d1f',
+                            textDark: '#1d1d1f',
+                            textMuted: '#6e6e73',
+                            blue: '#0066cc',
+                            blueHover: '#004499',
+                            border: '#d2d2d7',
+                            teal: '#00a88f',
+                            purple: '#7d52cc',
+                            emerald: '#30d158',
+                            pink: '#ff375f'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+                        mono: ['"SF Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #1d1d1f;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Glassmorphic sticky header bar */
+        .ml-header {
+            background: rgba(29, 29, 31, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Reading Progress Bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background-color: #0066cc;
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Toast Popup */
+        .toast-msg {
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .toast-msg.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Interactive chart point animation */
+        .chart-point {
+            transition: transform 0.2s ease, r 0.2s ease;
+            cursor: pointer;
+        }
+        .chart-point:hover {
+            transform: scale(1.4);
+        }
+
+        /* Flowchart animation effect */
+        @keyframes flowPulse {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .animated-flow {
+            stroke-dasharray: 6, 6;
+            animation: flowPulse 1.5s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-white text-[#1d1d1f] antialiased selection:bg-[#0066cc] selection:text-white flex flex-col min-h-screen">
+
+    <!-- Reading Progress Bar -->
+    <div id="scroll-progress"></div>
+
+    <!-- Apple Machine Learning Research Sticky Header -->
+    <header class="ml-header fixed top-0 left-0 right-0 z-50 h-[52px] border-b border-white/10 text-white flex items-center">
+        <div class="max-w-[980px] w-full mx-auto px-4 sm:px-6 flex justify-between items-center text-sm">
+            <a href="#" class="font-semibold text-base flex items-center space-x-2 tracking-tight hover:opacity-80 transition-opacity">
+                <!-- Apple Logo SVG -->
+                <svg class="w-4 h-4 fill-current mb-0.5" viewBox="0 0 170 170">
+                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.9-14.4-6.08-3.81-3.04-7.84-7.86-12.08-14.45-8.8-13.72-15.1-29.83-18.9-48.33-3.8-18.5-4.22-34.9-1.26-49.2 2.96-14.3 8.78-25.9 17.47-34.8 8.69-8.9 18.82-13.4 30.39-13.5 4.33 0 9.29 1.12 14.88 3.35 5.59 2.24 9.68 3.35 12.28 3.35 2.22 0 6.23-1.11 12.03-3.35 5.8-2.23 10.51-3.3 14.13-3.2 10.98.61 20.31 4.54 27.99 11.8 7.68 7.26 12.87 16.5 15.57 27.72-10.15 6.13-15.11 14.87-14.88 26.22.23 10.13 4.22 18.58 11.97 25.35 4.25 3.73 9.17 6.35 14.76 7.86-2.58 7.62-5.97 15.34-10.17 23.16zM119.22 31.84c0-7.3 2.66-14.28 7.98-20.93 5.32-6.65 11.97-10.37 19.95-11.16.12.92.18 1.73.18 2.43 0 7.18-2.73 14.18-8.19 21.01-5.46 6.83-12.18 10.59-20.17 11.28-.11-.81-.17-1.68-.17-2.63z"/>
+                </svg>
+                <span>Machine Learning Research</span>
+            </a>
+            <nav class="hidden md:flex items-center space-x-6 text-xs text-gray-300">
+                <a href="#" class="hover:text-white transition-colors">Overview</a>
+                <a href="#" class="hover:text-white transition-colors text-white font-medium">Research Highlights</a>
+                <a href="#" class="hover:text-white transition-colors">Publications</a>
+                <a href="#" class="hover:text-white transition-colors">Events</a>
+                <a href="#" class="hover:text-white transition-colors">Work with us</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO TITLE HEADER BLOCK -->
+    <div class="bg-[#f5f5f7] pt-[92px] pb-12 border-b border-[#e5e5ea]">
+        <div class="max-w-[680px] mx-auto px-4">
+            <!-- Metadata Line -->
+            <div class="text-[14px] font-semibold text-[#6e6e73] mb-2 flex items-center space-x-2">
+                <span>Highlight | July 23, 2025</span>
+            </div>
+            <div class="text-[14px] font-medium text-[#0066cc] mb-3">
+                Computer Vision
+            </div>
+            <!-- Main Article Title -->
+            <h1 class="text-3xl sm:text-4xl md:text-[40px] font-bold text-[#1d1d1f] tracking-tight leading-[1.12] mb-6">
+                FastVLM: Efficient Vision Encoding for Vision Language Models
+            </h1>
+            <!-- Divider Line -->
+            <div class="w-full h-[1px] bg-[#d2d2d7] my-6"></div>
+            <!-- Share Link Button -->
+            <div class="flex items-center space-x-3">
+                <button id="share-btn" class="p-2 rounded-full hover:bg-black/5 transition-colors text-[#6e6e73] hover:text-[#1d1d1f]" title="Copy link to article">
+                    <i data-lucide="link-2" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARTICLE MAIN CONTENT CONTAINER -->
+    <main class="flex-grow py-12 px-4 sm:px-6">
+        <article class="max-w-[680px] mx-auto space-y-6 text-[17px] leading-[1.58] text-[#1d1d1f]">
+
+            <p>
+                Vision Language Models (VLMs) merge visual perception with natural language understanding. By projecting visual tokens from a pretrained image encoder directly into a Large Language Model (LLM), VLMs leverage rich visual representations alongside deep reasoning capabilities. This enables powerful applications ranging from accessibility aids, user interface automation, robotics, and real-time scene understanding.
+            </p>
+
+            <!-- UPDATE CALLOUT BOX -->
+            <div class="bg-[#f5f5f7] border border-[#e5e5ea] rounded-2xl p-6 my-6 text-[15px] leading-relaxed text-[#1d1d1f] space-y-3">
+                <div class="font-bold text-[#1d1d1f]">
+                    Update - September 22, 2025:
+                </div>
+                <ul class="list-disc pl-5 space-y-2 text-[#1d1d1f]">
+                    <li>
+                        FastVLM models, including pre-trained checkpoints for MLX and CoreML frameworks, are available on HuggingFace <a href="#" class="text-[#0066cc] hover:underline inline-flex items-center font-medium">here <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 ml-0.5"></i></a>.
+                    </li>
+                    <li>
+                        HuggingFace has published an interactive FastVLM live demo that executes in real-time inside the web browser via transformers.js and WebGPU, available <a href="#" class="text-[#0066cc] hover:underline inline-flex items-center font-medium">here <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 ml-0.5"></i></a>. Demonstration videos are accessible in <a href="#" class="text-[#0066cc] hover:underline inline-flex items-center font-medium">this thread <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 ml-0.5"></i></a>.
+                    </li>
+                    <li>
+                        MobileCLIP2 is now available on HuggingFace <a href="#" class="text-[#0066cc] hover:underline inline-flex items-center font-medium">here <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 ml-0.5"></i></a>. MobileCLIP2 models serve as ultra-fast vision encoders tailored for high-speed VLM pipelines. For complete methodology, refer to the paper: <a href="#" class="text-[#0066cc] hover:underline font-medium">MobileCLIP2: Improving Multi-Modal Reinforced Training</a> (Accepted to <em>TMLR</em> with Featured certification).
+                    </li>
+                </ul>
+            </div>
+
+            <p>
+                A primary bottleneck in modern VLMs is the trade-off between image resolution and inference latency. While higher resolutions significantly improve accuracy on detailed visual tasks, they dramatically increase computational cost and token length, hindering real-time on-device deployment.
+            </p>
+
+            <p>
+                In a research paper presented at CVPR 2025, Apple ML researchers introduced <strong>FastVLM</strong>—a novel VLM architecture designed to overcome this trade-off. By utilizing a hybrid vision encoder (FastViTHD) optimized specifically for high-resolution images, FastVLM achieves state-of-the-art efficiency and speed without compromising task accuracy.
+            </p>
+
+            <!-- SECTION 1: Image Resolution Tradeoffs -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                Image Resolution and the Accuracy-Latency Tradeoff
+            </h2>
+
+            <p>
+                VLM performance relies heavily on input resolution. High-resolution input is required to parse complex textual elements, traffic signs, or fine details in user interfaces. As shown in <strong>Figure 1</strong>, when asked about a distant street sign, a standard low-resolution model fails to read the text correctly, whereas a high-resolution model easily identifies the exact sign.
+            </p>
+
+            <!-- FIGURE 1: Interactive Low Res vs High Res Comparison Card -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl space-y-6">
+                <!-- Question Title -->
+                <div>
+                    <div class="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-1">Question</div>
+                    <div class="text-xl font-bold text-white">What does the street sign mention?</div>
+                </div>
+
+                <!-- Grid Comparison -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Low Res Model Card -->
+                    <div class="bg-[#2a2a2d] rounded-xl p-4 flex flex-col justify-between border border-white/10 space-y-4">
+                        <div class="text-sm font-semibold text-gray-300">Low Res Model</div>
+                        <!-- Simulated Low Res Image -->
+                        <div class="w-full aspect-[4/3] bg-[#111] rounded-lg overflow-hidden relative flex items-center justify-center p-4">
+                            <div class="w-24 h-24 bg-slate-800 rounded flex flex-col items-center justify-center border border-gray-700 shadow-inner">
+                                <div class="w-8 h-8 rounded-full bg-red-800/40 border border-red-500/30 flex items-center justify-center mb-1">
+                                    <div class="w-5 h-1 bg-white/40"></div>
+                                </div>
+                                <span class="text-[10px] text-gray-400 font-mono">256x256 px</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Answer</div>
+                            <div class="text-sm text-gray-200 font-medium">The street sign in the image mentions "bus stop".</div>
+                            <div class="mt-2 text-xs font-bold text-red-400 flex items-center space-x-1">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                                <span>Incorrect</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- High Res Model Card -->
+                    <div class="bg-[#2a2a2d] rounded-xl p-4 flex flex-col justify-between border border-white/10 space-y-4">
+                        <div class="text-sm font-semibold text-gray-300">High Res Model</div>
+                        <!-- Simulated High Res Image -->
+                        <div class="w-full aspect-[4/3] bg-gradient-to-br from-slate-700 via-zinc-800 to-slate-900 rounded-lg overflow-hidden relative flex flex-col items-center justify-center p-3 border border-white/10 shadow-lg">
+                            <div class="w-full h-full bg-[#1c2430] rounded flex flex-col items-center justify-center relative p-2">
+                                <div class="z-10 w-12 h-12 rounded-full bg-red-600 border-2 border-white flex items-center justify-center shadow-xl">
+                                    <div class="w-8 h-2 bg-white rounded-xs"></div>
+                                </div>
+                                <div class="z-10 text-[10px] text-white font-mono bg-black/60 px-2 py-0.5 rounded mt-3">1536x1536 px</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase tracking-wider text-gray-400 mb-1">Answer</div>
+                            <div class="text-sm text-gray-200 font-medium">The street sign in the image is red and white, and it says "Do Not Enter".</div>
+                            <div class="mt-2 text-xs font-bold text-emerald-400 flex items-center space-x-1">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                                <span>Correct</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 1 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 1:</strong> Comparison of VLM performance with a low-resolution (left) and high-resolution (right) input image.
+            </p>
+
+            <p>
+                However, scaling input resolution impacts latency through two key factors: 1) vision encoding time increases quadratically or polynomially with pixel count, and 2) additional visual tokens significantly prolong the pre-filling stage of the language model. As illustrated in <strong>Figure 2</strong>, vision encoding latency dominates the overall time-to-first-token (TTFT) at high resolutions.
+            </p>
+
+            <!-- FIGURE 2: Latency Breakdown Bar Chart -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">Latency Breakdown</h3>
+                    <p class="text-xs text-gray-400 mt-1">For 1.5B VLM (fp16)</p>
+                    
+                    <!-- Chart Legend -->
+                    <div class="flex items-center justify-center space-x-6 mt-4 text-xs font-medium">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-xs bg-[#0066cc]"></span>
+                            <span class="text-gray-300">Vision Encoding</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-xs bg-[#7d52cc]"></span>
+                            <span class="text-gray-300">LLM Prefilling</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Bar Graph Container -->
+                <div class="relative h-64 w-full flex items-end justify-between border-b border-l border-gray-700 px-2 sm:px-8 pb-2 mt-8">
+                    <div class="absolute -left-8 top-0 bottom-0 flex flex-col justify-between text-[10px] font-mono text-gray-400">
+                        <span>1,000</span>
+                        <span>800</span>
+                        <span>600</span>
+                        <span>400</span>
+                        <span>200</span>
+                        <span>0</span>
+                    </div>
+
+                    <!-- 256px -->
+                    <div class="flex flex-col items-center space-y-2 group relative">
+                        <div class="flex items-end space-x-1 h-48">
+                            <div class="w-3 sm:w-5 bg-[#0066cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 12px;" title="Vision: 25ms"></div>
+                            <div class="w-3 sm:w-5 bg-[#7d52cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 25px;" title="LLM: 52ms"></div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">256</span>
+                    </div>
+
+                    <!-- 512px -->
+                    <div class="flex flex-col items-center space-y-2 group relative">
+                        <div class="flex items-end space-x-1 h-48">
+                            <div class="w-3 sm:w-5 bg-[#0066cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 35px;" title="Vision: 72ms"></div>
+                            <div class="w-3 sm:w-5 bg-[#7d52cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 60px;" title="LLM: 125ms"></div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">512</span>
+                    </div>
+
+                    <!-- 768px -->
+                    <div class="flex flex-col items-center space-y-2 group relative">
+                        <div class="flex items-end space-x-1 h-48">
+                            <div class="w-3 sm:w-5 bg-[#0066cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 75px;" title="Vision: 156ms"></div>
+                            <div class="w-3 sm:w-5 bg-[#7d52cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 90px;" title="LLM: 188ms"></div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">768</span>
+                    </div>
+
+                    <!-- 1024px -->
+                    <div class="flex flex-col items-center space-y-2 group relative">
+                        <div class="flex items-end space-x-1 h-48">
+                            <div class="w-3 sm:w-5 bg-[#0066cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 120px;" title="Vision: 250ms"></div>
+                            <div class="w-3 sm:w-5 bg-[#7d52cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 120px;" title="LLM: 250ms"></div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">1024</span>
+                    </div>
+
+                    <!-- 1536px -->
+                    <div class="flex flex-col items-center space-y-2 group relative">
+                        <div class="flex items-end space-x-1 h-48">
+                            <div class="w-3 sm:w-5 bg-[#0066cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 175px;" title="Vision: 870ms"></div>
+                            <div class="w-3 sm:w-5 bg-[#7d52cc] rounded-t-xs transition-all duration-300 hover:brightness-125" style="height: 150px;" title="LLM: 310ms"></div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">1536</span>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-400 font-semibold mt-4">
+                    Input Image Resolution (px)
+                </div>
+            </div>
+
+            <!-- Figure 2 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 2:</strong> Vision latency dominates at high resolution. Breakdown of FastVLM's time to first token across resolutions using FastViT-HD backbone paired with a 1.5B LLM.
+            </p>
+
+            <!-- SECTION 2: Hybrid Encoders -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                Hybrid Vision Encoders Deliver the Best Accuracy-Latency Tradeoff
+            </h2>
+
+            <p>
+                To determine the most efficient vision backbone, we benchmarked multiple architectural paradigms under identical training setups. Comparing standard Vision Transformers (ViT-L/14, SigLIP-SO400), pure ConvNets (ConvNeXT-L), and hybrid architectures (FastViT), hybrid designs delivered optimal accuracy per millisecond. FastViT achieved an 8x reduction in model parameter footprint and ran up to 20x faster than standard ViT encoders.
+            </p>
+
+            <!-- FIGURE 3: Performance Comparison Line Chart -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center border-b border-gray-800 pb-4 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">Performance Comparison to FastViT</h3>
+                    <!-- Baseline Toggle Badges -->
+                    <div class="flex justify-center space-x-2 mt-3 text-[11px] font-mono">
+                        <span class="px-2.5 py-1 rounded bg-[#2a2a2d] text-gray-300">ViT-L/14</span>
+                        <span class="px-2.5 py-1 rounded bg-[#2a2a2d] text-gray-300">SigLIP-SO400</span>
+                        <span class="px-2.5 py-1 rounded bg-[#2a2a2d] text-gray-300">ConvNeXT-L</span>
+                    </div>
+                </div>
+
+                <!-- SVG Line Graph -->
+                <div class="relative h-64 w-full">
+                    <svg class="w-full h-full overflow-visible" viewBox="0 0 500 200">
+                        <!-- Grid Lines -->
+                        <line x1="40" y1="20" x2="480" y2="20" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="40" y1="70" x2="480" y2="70" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="40" y1="120" x2="480" y2="120" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="40" y1="170" x2="480" y2="170" stroke="#333" stroke-dasharray="4"/>
+
+                        <!-- FastViT Curve (Blue) -->
+                        <path d="M 60 160 Q 120 60 220 40" fill="none" stroke="#0066cc" stroke-width="3"/>
+                        <circle cx="60" cy="160" r="5" fill="#0066cc" class="chart-point"/>
+                        <circle cx="120" cy="60" r="5" fill="#0066cc" class="chart-point"/>
+                        <circle cx="220" cy="40" r="5" fill="#0066cc" class="chart-point"/>
+
+                        <!-- ConvNeXT-L Curve (White) -->
+                        <path d="M 80 180 Q 200 110 460 70" fill="none" stroke="#ffffff" stroke-width="2"/>
+                        <circle cx="80" cy="180" r="4" fill="#ffffff" class="chart-point"/>
+                        <circle cx="200" cy="110" r="4" fill="#ffffff" class="chart-point"/>
+                        <circle cx="460" cy="70" r="4" fill="#ffffff" class="chart-point"/>
+                    </svg>
+
+                    <div class="flex justify-between text-[11px] font-mono text-gray-400 mt-2 px-8">
+                        <span>0</span>
+                        <span>250</span>
+                        <span>500</span>
+                        <span>750</span>
+                        <span>1000</span>
+                    </div>
+                    <div class="text-center text-xs font-semibold text-gray-400 mt-1">Time to First Token (TTFT in ms)</div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-800 flex items-center justify-center space-x-6 text-xs">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-[#0066cc]"></span>
+                        <span class="text-gray-300 font-semibold">FastViT</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-white"></span>
+                        <span class="text-gray-300">ConvNeXT-L</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 3 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 3:</strong> Comparison of vision backbones pre-trained with CLIP on VLM benchmarks (GQA, TextVQA, DocVQA, SeedBench, POPE). FastViT achieves superior accuracy with substantially lower TTFT latency.
+            </p>
+
+            <!-- SECTION 3: FastViTHD Backbone -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                FastViTHD: An Optimal Vision Encoder for VLMs
+            </h2>
+
+            <p>
+                Although FastViT is efficient, directly scaling its layer capacity for high resolutions introduces compute redundancies. To overcome this, we designed <strong>FastViTHD</strong>, a high-resolution vision encoder that incorporates an additional hierarchical downsampling stage along with multi-scale feature pooling. This structural improvement generates 4x fewer tokens than FastViT and 16x fewer tokens than standard ViT-L/14 at 336x336 resolution.
+            </p>
+
+            <!-- FIGURE 4: Pareto-Optimal Curve Interactive Graph -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center border-b border-gray-800 pb-4 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">Pareto-Optimal Curve by Model Size</h3>
+                    <div class="flex justify-center space-x-2 mt-3">
+                        <button class="px-3 py-1 rounded-md bg-[#2a2a2d] text-xs font-mono hover:bg-[#3a3a3d]">0.5B</button>
+                        <button class="px-3 py-1 rounded-md bg-[#0066cc] text-xs font-mono font-bold text-white">1.5B</button>
+                        <button class="px-3 py-1 rounded-md bg-[#2a2a2d] text-xs font-mono hover:bg-[#3a3a3d]">7B</button>
+                    </div>
+                </div>
+
+                <div class="relative h-64 w-full">
+                    <svg class="w-full h-full overflow-visible" viewBox="0 0 500 200">
+                        <line x1="40" y1="30" x2="480" y2="30" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="40" y1="80" x2="480" y2="80" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="40" y1="130" x2="480" y2="130" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="40" y1="180" x2="480" y2="180" stroke="#333" stroke-dasharray="4"/>
+
+                        <!-- FastViTHD Pareto Curve (Green Dashed) -->
+                        <path d="M 50 180 Q 150 100 350 40" fill="none" stroke="#30d158" stroke-width="3" stroke-dasharray="6,6"/>
+                        <circle cx="50" cy="180" r="4" fill="#30d158" class="chart-point"/>
+                        <circle cx="150" cy="100" r="4" fill="#30d158" class="chart-point"/>
+                        <circle cx="350" cy="40" r="4" fill="#30d158" class="chart-point"/>
+
+                        <!-- FastViT Curve (Blue Dashed) -->
+                        <path d="M 50 180 Q 200 130 450 70" fill="none" stroke="#0066cc" stroke-width="2" stroke-dasharray="4,4"/>
+                        <circle cx="50" cy="180" r="4" fill="#0066cc" class="chart-point"/>
+                        <circle cx="200" cy="130" r="4" fill="#0066cc" class="chart-point"/>
+                        <circle cx="450" cy="70" r="4" fill="#0066cc" class="chart-point"/>
+                    </svg>
+
+                    <div class="flex justify-between text-[11px] font-mono text-gray-400 mt-2 px-6">
+                        <span>10</span>
+                        <span>100</span>
+                        <span>1000</span>
+                        <span>10000</span>
+                    </div>
+                    <div class="text-center text-xs font-semibold text-gray-400 mt-1">Time to First Token (TTFT in ms, log scale)</div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-gray-800 flex items-center justify-center space-x-6 text-xs">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-[#0066cc]"></span>
+                        <span class="text-gray-300">FastViT</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-[#30d158]"></span>
+                        <span class="text-gray-300 font-semibold">FastViTHD</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 4 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 4:</strong> Pareto-optimal curves comparing FastViT and FastViTHD across model parameter scales. FastViTHD provides up to 3x speedup for equivalent accuracy on complex visual reasoning.
+            </p>
+
+            <!-- SECTION 4: Architecture Overview -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                FastVLM: a New VLM Based on FastViTHD
+            </h2>
+
+            <p>
+                As depicted in <strong>Figure 5</strong>, FastVLM combines the FastViTHD encoder with a simple Multi-Layer Perceptron (MLP) projection layer. The visual tokens are concatenated directly with the text tokens from the prompt and passed to the LLM.
+            </p>
+
+            <!-- FIGURE 5: Architectural Flowchart Diagram -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl overflow-x-auto">
+                <div class="text-center border-b border-gray-800 pb-3 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">FastVLM System Architecture</h3>
+                </div>
+
+                <div class="min-w-[500px] flex flex-col items-center space-y-6">
+                    <!-- Top Inputs -->
+                    <div class="grid grid-cols-2 gap-12 w-full max-w-lg">
+                        <!-- Left: Input Image -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-28 h-20 bg-slate-800 rounded-lg border border-gray-600 p-1 flex items-center justify-center overflow-hidden shadow-md">
+                                <div class="w-full h-full bg-gradient-to-tr from-sky-700 to-indigo-900 rounded flex items-center justify-center text-[10px] text-gray-300 font-mono">
+                                    Input Image
+                                </div>
+                            </div>
+                            <i data-lucide="arrow-down" class="w-4 h-4 text-gray-500 my-1"></i>
+                            
+                            <!-- Vision Encoder Box -->
+                            <div class="w-full bg-[#2a2a2d] border border-gray-700 rounded-xl p-3 flex flex-col space-y-2 text-xs font-mono text-center">
+                                <span class="font-bold text-white font-sans text-sm border-b border-gray-700 pb-1">Vision Encoder (FastViTHD)</span>
+                                <div class="bg-[#1a1a1d] py-1 rounded">Stem Layer</div>
+                                <div class="bg-[#1a1a1d] py-1 rounded">Stage 1</div>
+                                <div class="text-[9px] text-gray-400">Patch Embedding Stride 2</div>
+                                <div class="bg-[#1a1a1d] py-1 rounded">Stage 2</div>
+                                <div class="text-[9px] text-gray-400">Patch Embedding Stride 2</div>
+                                <div class="bg-[#1a1a1d] py-1 rounded">Stage 3</div>
+                                <div class="text-[9px] text-gray-400">Patch Embedding Stride 2</div>
+                                <div class="bg-white text-black font-bold py-1 rounded shadow">Stage 4</div>
+                                <div class="text-[9px] text-gray-400">Patch Embedding Stride 2</div>
+                                <div class="bg-white text-black font-bold py-1 rounded shadow">Stage 5</div>
+                                <div class="w-6 h-6 mx-auto rounded-full bg-gray-700 border border-gray-500 flex items-center justify-center text-white font-bold my-1">C</div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Question Input -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-full bg-[#2a2a2d] border border-gray-700 rounded-xl p-3 text-center space-y-2">
+                                <span class="text-xs font-bold text-gray-300 uppercase tracking-wider block">Question Prompt</span>
+                                <div class="bg-[#1a1a1d] p-2 rounded text-xs text-white font-sans font-medium">
+                                    "What does the street sign mention?"
+                                </div>
+                            </div>
+                            <i data-lucide="arrow-down" class="w-4 h-4 text-gray-500 my-2"></i>
+                            <div class="w-full bg-[#2a2a2d] border border-gray-700 rounded-xl p-3 text-center text-xs font-mono text-gray-200">
+                                Text Tokenizer
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projection & Tokens -->
+                    <div class="w-full max-w-lg flex flex-col items-center space-y-2">
+                        <div class="w-1/2 bg-[#2a2a2d] border border-gray-700 rounded-xl py-2 text-center text-xs font-mono font-bold text-white">
+                            MLP Projection
+                        </div>
+                        <i data-lucide="arrow-down" class="w-4 h-4 text-gray-500"></i>
+                        
+                        <!-- Token Strip -->
+                        <div class="flex space-x-1.5 my-1">
+                            <span class="w-4 h-4 rounded bg-gray-500"></span>
+                            <span class="w-4 h-4 rounded bg-gray-500"></span>
+                            <span class="w-4 h-4 rounded bg-gray-500"></span>
+                            <span class="w-4 h-4 rounded bg-gray-500"></span>
+                            <span class="w-4 h-4 rounded bg-gray-300"></span>
+                            <span class="w-4 h-4 rounded bg-gray-300"></span>
+                        </div>
+                    </div>
+
+                    <!-- LLM Block -->
+                    <div class="w-full max-w-lg bg-[#00a88f] text-white font-bold text-center py-4 rounded-xl shadow-lg text-base tracking-wide">
+                        Large Language Model (LLM)
+                    </div>
+
+                    <i data-lucide="arrow-down" class="w-5 h-5 text-gray-400"></i>
+
+                    <!-- Answer Output -->
+                    <div class="bg-[#2a2a2d] border border-emerald-500 px-6 py-2 rounded-full text-emerald-400 font-bold text-sm shadow-md">
+                        Answer Output
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 5 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 5:</strong> Structural diagram of FastVLM. FastViTHD generates 4x fewer tokens than FastViT and 16x fewer than standard ViT-L/14 at 336x336 resolution, streaming compact representations directly into the LLM.
+            </p>
+
+            <!-- SECTION 5: Token Pruning Benchmarks -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                FastVLM Outperforms Token Pruning and Merging Methods
+            </h2>
+
+            <p>
+                Prior acceleration techniques rely on heuristic token pruning or merging during inference. However, these post-hoc techniques often discard crucial spatial context. Because FastViTHD produces inherently compact tokens directly during visual encoding, FastVLM achieves superior task accuracy across token budgets without requiring complex pruning algorithms.
+            </p>
+
+            <!-- FIGURE 6: Performance Comparison Chart -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center border-b border-gray-800 pb-3 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">Performance Comparison</h3>
+                    <p class="text-xs text-gray-400 mt-1">Token Efficiency vs Accuracy across Benchmarks</p>
+                </div>
+
+                <div class="relative h-56 w-full flex items-end justify-between border-b border-l border-gray-700 px-4 sm:px-8 pb-2">
+                    <div class="absolute -left-8 top-0 bottom-0 flex flex-col justify-between text-[10px] font-mono text-gray-400">
+                        <span>60</span>
+                        <span>55</span>
+                        <span>50</span>
+                        <span>45</span>
+                    </div>
+
+                    <!-- Token Count Bars -->
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 sm:w-12 bg-[#0066cc] rounded-t-md h-24 relative group" title="FastVLM: 56.2%">
+                            <div class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-gray-700">56.2</div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">64 Tokens</span>
+                    </div>
+
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 sm:w-12 bg-[#0066cc] rounded-t-md h-36 relative group" title="FastVLM: 58.4%">
+                            <div class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-gray-700">58.4</div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">128 Tokens</span>
+                    </div>
+
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 sm:w-12 bg-[#0066cc] rounded-t-md h-44 relative group" title="FastVLM: 61.1%">
+                            <div class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-gray-700">61.1</div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">256 Tokens</span>
+                    </div>
+
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-8 sm:w-12 bg-[#0066cc] rounded-t-md h-48 relative group" title="FastVLM: 63.8%">
+                            <div class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-gray-700">63.8</div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-300">512 Tokens</span>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-400 font-semibold mt-4">
+                    Visual Tokens Delivered to LLM
+                </div>
+            </div>
+
+            <!-- Figure 6 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 6:</strong> FastVLM average evaluation score across GQA, TextVQA, ScienceQA, SeedBench, and POPE benchmarks as a function of allocated visual token count.
+            </p>
+
+            <!-- SECTION 6: Dynamic Tiling -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                FastVLM and Dynamic Tiling
+            </h2>
+
+            <p>
+                Dynamic tiling (such as AnyRes) splits high-resolution images into smaller sub-crops (tiles) alongside a lower-resolution global thumbnail. As illustrated in <strong>Figure 7</strong>, each tile is encoded independently before passing all resulting tokens to the language model.
+            </p>
+
+            <!-- FIGURE 7: AnyRes Tiling Pipeline Diagram -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl overflow-x-auto">
+                <div class="text-center border-b border-gray-800 pb-3 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">AnyRes Dynamic Tiling Pipeline</h3>
+                </div>
+
+                <div class="min-w-[550px] flex flex-col items-center space-y-6">
+                    <!-- Step 1: Original Image -> Image Tiling -->
+                    <div class="flex items-center space-x-8">
+                        <div class="flex flex-col items-center space-y-1">
+                            <span class="text-xs font-mono text-gray-400">Original Image</span>
+                            <div class="w-32 h-20 bg-slate-800 rounded border border-gray-600 overflow-hidden relative">
+                                <div class="w-full h-full bg-gradient-to-br from-amber-600 via-stone-700 to-slate-900 flex items-center justify-center text-[10px] text-white">Full Scene</div>
+                            </div>
+                        </div>
+
+                        <i data-lucide="arrow-right" class="w-5 h-5 text-gray-500"></i>
+
+                        <div class="flex flex-col items-center space-y-1">
+                            <span class="text-xs font-mono text-gray-400">Image Tiling (2x2 Grid)</span>
+                            <div class="w-32 h-20 bg-slate-800 rounded border border-gray-600 grid grid-cols-2 gap-0.5 p-0.5">
+                                <div class="bg-amber-700 rounded-xs"></div>
+                                <div class="bg-stone-700 rounded-xs"></div>
+                                <div class="bg-slate-800 rounded-xs"></div>
+                                <div class="bg-slate-950 rounded-xs"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Sub-crops Grid + Global Thumbnail -->
+                    <div class="w-full flex justify-around items-center pt-2">
+                        <!-- Left: 4 Individual Tiles -->
+                        <div class="bg-[#2a2a2d] border border-gray-700 rounded-xl p-3 flex space-x-2">
+                            <div class="w-12 h-10 bg-amber-700 rounded text-[8px] font-mono flex items-center justify-center text-white">Tile 1</div>
+                            <div class="w-12 h-10 bg-stone-700 rounded text-[8px] font-mono flex items-center justify-center text-white">Tile 2</div>
+                            <div class="w-12 h-10 bg-slate-800 rounded text-[8px] font-mono flex items-center justify-center text-white">Tile 3</div>
+                            <div class="w-12 h-10 bg-slate-950 rounded text-[8px] font-mono flex items-center justify-center text-white">Tile 4</div>
+                        </div>
+
+                        <!-- Right: Global Thumbnail -->
+                        <div class="bg-[#2a2a2d] border border-gray-700 rounded-xl p-3 flex flex-col items-center">
+                            <span class="text-[10px] font-mono text-gray-400 mb-1">Thumbnail</span>
+                            <div class="w-12 h-10 bg-gradient-to-br from-amber-600 to-slate-900 rounded text-[8px] font-mono flex items-center justify-center text-white">Global</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Encoder & Tokens -->
+                    <i data-lucide="arrow-down" class="w-5 h-5 text-gray-500"></i>
+                    <div class="bg-[#0066cc] text-white font-bold px-8 py-2.5 rounded-xl text-sm shadow">
+                        Vision Encoder
+                    </div>
+                    <i data-lucide="arrow-down" class="w-4 h-4 text-gray-500"></i>
+                    <div class="flex space-x-1">
+                        <span class="w-3 h-3 rounded bg-gray-400"></span>
+                        <span class="w-3 h-3 rounded bg-gray-400"></span>
+                        <span class="w-3 h-3 rounded bg-gray-400"></span>
+                        <span class="w-3 h-3 rounded bg-gray-400"></span>
+                        <span class="w-3 h-3 rounded bg-gray-400"></span>
+                        <span class="w-3 h-3 rounded bg-gray-400"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 7 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 7:</strong> AnyRes tiling pipeline divides high-resolution images into sub-crops and encodes them separately alongside a downsampled global view.
+            </p>
+
+            <p>
+                Because FastVLM natively processes high resolutions without tiling, we evaluated whether combining FastVLM with AnyRes tiling yields further benefits. As highlighted in <strong>Figure 8</strong>, FastVLM without dynamic tiling (blue curve) outperforms dynamic tiling (pink points) up to extremely large image dimensions.
+            </p>
+
+            <!-- FIGURE 8: Tiling Effect on Performance -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center border-b border-gray-800 pb-3 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">Tiling Effect on Performance</h3>
+                    <div class="flex justify-center space-x-2 mt-3">
+                        <button class="px-3 py-1 rounded bg-[#0066cc] text-xs font-mono font-bold">2x2</button>
+                        <button class="px-3 py-1 rounded bg-[#2a2a2d] text-xs font-mono hover:bg-[#3a3a3d]">3x3</button>
+                        <button class="px-3 py-1 rounded bg-[#2a2a2d] text-xs font-mono hover:bg-[#3a3a3d]">4x4</button>
+                    </div>
+                </div>
+
+                <div class="relative h-52 w-full flex items-center justify-center">
+                    <svg class="w-full h-full" viewBox="0 0 500 180">
+                        <line x1="30" y1="20" x2="470" y2="20" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="30" y1="90" x2="470" y2="90" stroke="#333" stroke-dasharray="4"/>
+                        <line x1="30" y1="160" x2="470" y2="160" stroke="#333" stroke-dasharray="4"/>
+
+                        <!-- FastVLM Native Curve (Blue) -->
+                        <path d="M 40 140 Q 200 40 450 30" fill="none" stroke="#0066cc" stroke-width="3"/>
+                        <circle cx="40" cy="140" r="5" fill="#0066cc"/>
+                        <circle cx="200" cy="65" r="5" fill="#0066cc"/>
+                        <circle cx="450" cy="30" r="5" fill="#0066cc"/>
+
+                        <!-- Dynamic Tiling Points (Pink) -->
+                        <circle cx="120" cy="110" r="6" fill="#ff375f"/>
+                        <circle cx="280" cy="75" r="6" fill="#ff375f"/>
+                        <circle cx="420" cy="45" r="6" fill="#ff375f"/>
+                    </svg>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-800 flex items-center justify-center space-x-6 text-xs">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-[#0066cc]"></span>
+                        <span class="text-gray-300 font-semibold">FastVLM Native</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-[#ff375f]"></span>
+                        <span class="text-gray-300">FastVLM + AnyRes Tiling</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 8 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 8:</strong> Dynamic tiling (AnyRes) vs FastVLM native resolution scaling. Native FastVLM preserves better accuracy-latency tradeoffs across standard production bounds.
+            </p>
+
+            <!-- SECTION 7: SOTA Comparison -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-6 pb-1">
+                FastVLM is Faster and More Accurate Than Popular VLMs of the Same Size
+            </h2>
+
+            <p>
+                We compared FastVLM against leading open-source models across equal parameter classes. As detailed in <strong>Figure 9</strong>, FastVLM runs <strong>85x faster</strong> than LLaVA-OneVision (0.5B), <strong>5.2x faster</strong> than SmolVLM (~0.5B), and <strong>21x faster</strong> than Cambrian-1 (7B).
+            </p>
+
+            <!-- FIGURE 9: Performance Comparison by Model Size -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center border-b border-gray-800 pb-3 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">Performance Comparison by Model Size</h3>
+                </div>
+
+                <div class="space-y-4 font-sans">
+                    <!-- LLaVA-OneVision vs FastVLM -->
+                    <div class="bg-[#2a2a2d] rounded-xl p-4 border border-gray-700">
+                        <div class="flex justify-between items-center text-xs font-bold mb-2">
+                            <span>0.5B Class Comparison</span>
+                            <span class="text-emerald-400 font-mono">85x Faster than LLaVA-OneVision</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs text-gray-400">
+                                <span>LLaVA-OneVision 0.5B</span>
+                                <span class="font-mono">8,500 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-gray-500 h-full w-full"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-emerald-400 font-semibold">
+                                <span>FastVLM 0.5B</span>
+                                <span class="font-mono">100 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-[#0066cc] h-full w-[2%]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SmolVLM vs FastVLM -->
+                    <div class="bg-[#2a2a2d] rounded-xl p-4 border border-gray-700">
+                        <div class="flex justify-between items-center text-xs font-bold mb-2">
+                            <span>SmolVLM Class Comparison</span>
+                            <span class="text-emerald-400 font-mono">5.2x Faster than SmolVLM</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs text-gray-400">
+                                <span>SmolVLM (~0.5B)</span>
+                                <span class="font-mono">520 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-gray-500 h-full w-[80%]"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-emerald-400 font-semibold">
+                                <span>FastVLM 0.5B</span>
+                                <span class="font-mono">100 ms</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-[#0066cc] h-full w-[15%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 9 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 9:</strong> Comparison of FastVLM with popular VLMs across ChartQA, TextVQA, DocVQA, OCRBench, AI2D, MMMU, and ScienceQA benchmarks.
+            </p>
+
+            <!-- SECTION 8: On-Device iOS Demo App -->
+            <p>
+                To validate real-time execution on consumer devices, we released an open-source <a href="#" class="text-[#0066cc] hover:underline inline-flex items-center font-medium">iOS/macOS demo app <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 ml-0.5"></i></a> powered by MLX. As showcased in <strong>Figure 10</strong>, FastVLM delivers sub-second TTFT directly on an iPhone GPU, enabling instant visual visual query responses.
+            </p>
+
+            <!-- FIGURE 10: iPhone Demo Simulation Mockup -->
+            <div class="my-8 bg-[#1d1d1f] text-white rounded-2xl p-6 shadow-xl">
+                <div class="text-center border-b border-gray-800 pb-4 mb-6">
+                    <h3 class="text-xl font-bold tracking-tight text-white">FastVLM On-Device iOS Demo App</h3>
+                    <p class="text-xs text-gray-400 mt-1">Real-time inference on iPhone 16 Pro GPU</p>
+                </div>
+
+                <!-- Dual Phone Screen Mockup Container -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg mx-auto">
+                    <!-- Phone 1: OCR Text Recognition -->
+                    <div class="bg-black rounded-[36px] p-3 border-4 border-[#333] shadow-2xl flex flex-col">
+                        <!-- Dynamic Island -->
+                        <div class="w-20 h-4 bg-black rounded-full mx-auto mb-2 flex items-center justify-center">
+                            <div class="w-3 h-3 rounded-full bg-[#111] mr-2"></div>
+                        </div>
+                        
+                        <!-- App UI Screen -->
+                        <div class="bg-[#121214] rounded-[28px] p-3 flex-grow border border-gray-800 text-xs font-sans space-y-3">
+                            <div class="flex justify-between items-center text-[10px] text-gray-400 border-b border-gray-800 pb-1">
+                                <span class="font-bold text-white">FastVLM</span>
+                                <span class="text-emerald-400 font-mono">TTFT: 79.5 ms</span>
+                            </div>
+
+                            <!-- Camera Viewfinder -->
+                            <div class="w-full aspect-square bg-slate-900 rounded-xl overflow-hidden relative border border-gray-700 flex flex-col items-center justify-center p-2">
+                                <div class="w-full h-full bg-amber-100 rounded p-2 flex flex-col items-center justify-center text-center shadow-inner">
+                                    <span class="text-[10px] font-mono text-gray-800 font-bold uppercase tracking-tight">THIS IS A DEMO OF FAST LANGUAGE MODEL FAST VLM</span>
+                                </div>
+                                <div class="absolute bottom-2 bg-emerald-500 text-black font-bold px-2 py-0.5 rounded-full text-[9px]">
+                                    Generating Response
+                                </div>
+                            </div>
+
+                            <!-- Prompt & Response -->
+                            <div class="space-y-1">
+                                <div class="text-[9px] uppercase text-gray-400">Prompt</div>
+                                <div class="bg-[#1c1c1e] p-1.5 rounded text-[10px] text-gray-200">What is written in this image?</div>
+                                <div class="text-[9px] uppercase text-gray-400 pt-1">Response</div>
+                                <div class="bg-[#1c1c1e] p-1.5 rounded text-[10px] text-emerald-400 font-semibold">This is a demo of Fast Language Model Fast VLM</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phone 2: Finger Counting -->
+                    <div class="bg-black rounded-[36px] p-3 border-4 border-[#333] shadow-2xl flex flex-col">
+                        <!-- Dynamic Island -->
+                        <div class="w-20 h-4 bg-black rounded-full mx-auto mb-2 flex items-center justify-center">
+                            <div class="w-3 h-3 rounded-full bg-[#111] mr-2"></div>
+                        </div>
+                        
+                        <!-- App UI Screen -->
+                        <div class="bg-[#121214] rounded-[28px] p-3 flex-grow border border-gray-800 text-xs font-sans space-y-3">
+                            <div class="flex justify-between items-center text-[10px] text-gray-400 border-b border-gray-800 pb-1">
+                                <span class="font-bold text-white">FastVLM</span>
+                                <span class="text-emerald-400 font-mono">TTFT: 53.2 ms</span>
+                            </div>
+
+                            <!-- Camera Viewfinder -->
+                            <div class="w-full aspect-square bg-stone-900 rounded-xl overflow-hidden relative border border-gray-700 flex flex-col items-center justify-center p-2">
+                                <div class="w-full h-full bg-stone-800 rounded flex flex-col items-center justify-center text-center shadow-inner">
+                                    <!-- Hand Graphic -->
+                                    <i data-lucide="hand" class="w-12 h-12 text-amber-200 mb-1"></i>
+                                </div>
+                                <div class="absolute bottom-2 bg-amber-500 text-black font-bold px-2 py-0.5 rounded-full text-[9px]">
+                                    Processing Prompt
+                                </div>
+                            </div>
+
+                            <!-- Prompt & Response -->
+                            <div class="space-y-1">
+                                <div class="text-[9px] uppercase text-gray-400">Prompt</div>
+                                <div class="bg-[#1c1c1e] p-1.5 rounded text-[10px] text-gray-200">How many fingers am I holding up?</div>
+                                <div class="text-[9px] uppercase text-gray-400 pt-1">Response</div>
+                                <div class="bg-[#1c1c1e] p-1.5 rounded text-[10px] text-emerald-400 font-semibold">The answer is 3.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Figure 10 Caption -->
+            <p class="text-[13px] leading-relaxed text-[#6e6e73] -mt-2 mb-6">
+                <strong>Figure 10:</strong> Open-source demo application running FastVLM (0.5B model) locally on an iPhone 16 Pro GPU, showcasing real-time optical character recognition and visual counting.
+            </p>
+
+            <!-- SECTION 9: Conclusion -->
+            <h2 class="text-2xl font-bold text-[#1d1d1f] tracking-tight pt-8 pb-1">
+                Conclusion
+            </h2>
+
+            <p>
+                FastVLM redefines the trade-off between image resolution and inference latency in Vision Language Models. By introducing the FastViTHD hybrid backbone, FastVLM delivers high-quality visual token representations with dramatically reduced latency. This simple, effective design eliminates the need for complex post-hoc token pruning or dynamic tiling, opening up new possibilities for real-time, privacy-preserving AI applications on personal devices.
+            </p>
+
+        </article>
+    </main>
+
+    <!-- RELATED READINGS AND UPDATES SECTION -->
+    <section class="bg-[#f5f5f7] py-12 border-t border-[#e5e5ea]">
+        <div class="max-w-[980px] mx-auto px-4 sm:px-6">
+            
+            <!-- Section Header -->
+            <div class="border-b border-[#1d1d1f] pb-3 mb-8">
+                <h2 class="text-2xl sm:text-[28px] font-bold text-[#1d1d1f] tracking-tight">
+                    Related readings and updates.
+                </h2>
+            </div>
+
+            <!-- Grid Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-xl p-6 sm:p-8 flex flex-col justify-between border border-[#e5e5ea] shadow-xs hover:shadow-md transition-shadow">
+                    <div>
+                        <div class="text-xs font-semibold text-[#6e6e73] mb-3">
+                            April 18, 2025 | Computer Vision | CVPR
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-[#1d1d1f] leading-snug tracking-tight mb-4">
+                            FastVLM: Efficient Vision encoding for Vision Language Models
+                        </h3>
+                        <div class="w-full h-[1px] bg-[#e5e5ea] my-4"></div>
+                        <p class="text-[14px] sm:text-[15px] leading-relaxed text-[#1d1d1f] mb-6">
+                            Scaling input resolution is essential for enhancing VLM performance, particularly on text-rich image tasks. However, popular vision encoders become inefficient at high resolutions due to large token counts. FastVLM optimizes visual encoding along two axes: reducing encoding latency and minimizing token overhead.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="#" class="inline-block px-5 py-2 rounded-full border border-[#1d1d1f] text-xs font-semibold text-[#1d1d1f] hover:bg-[#1d1d1f] hover:text-white transition-colors">
+                            Read more
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white rounded-xl p-6 sm:p-8 flex flex-col justify-between border border-[#e5e5ea] shadow-xs hover:shadow-md transition-shadow">
+                    <div>
+                        <div class="text-xs font-semibold text-[#6e6e73] mb-3">
+                            June 7, 2022 | Computer Vision, Methods and Algorithms
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-[#1d1d1f] leading-snug tracking-tight mb-4">
+                            A Multi-Task Neural Architecture for On-Device Scene Analysis
+                        </h3>
+                        <div class="w-full h-[1px] bg-[#e5e5ea] my-4"></div>
+                        <p class="text-[14px] sm:text-[15px] leading-relaxed text-[#1d1d1f] mb-6">
+                            Scene analysis powers core technologies in the Apple ecosystem, from visual search to intelligent photo indexing. Deploying dedicated models for each individual task is inefficient. We present Apple Neural Scene Analyzer (ANSA), a unified backbone built to maintain complex scene understanding on-device.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="#" class="inline-block px-5 py-2 rounded-full border border-[#1d1d1f] text-xs font-semibold text-[#1d1d1f] hover:bg-[#1d1d1f] hover:text-white transition-colors">
+                            Read more
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECRUITMENT BANNER SECTION -->
+            <div class="bg-[#e8e8ed] rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 items-center border border-[#d2d2d7]">
+                <div class="md:col-span-7 bg-[#d9d9de] h-full min-h-[220px] relative flex items-center justify-center p-6 overflow-hidden">
+                    <!-- SVG Vector Artwork -->
+                    <svg class="w-full h-full max-h-[220px] text-[#86868b]" viewBox="0 0 500 300" fill="none">
+                        <path d="M50 220 L450 220 L420 280 L80 280 Z" fill="#b8b8be" />
+                        <rect x="220" y="180" width="60" height="35" rx="3" fill="#1d1d1f" />
+                        <path d="M210 215 L290 215 L285 220 L215 220 Z" fill="#a1a1a6" />
+                        <circle cx="160" cy="110" r="22" fill="#9e9ea3" />
+                        <path d="M130 180 C130 140, 190 140, 190 180 Z" fill="#7d7d82" />
+                        <circle cx="250" cy="90" r="20" fill="#8e8e93" />
+                        <path d="M222 155 C222 120, 278 120, 278 155 Z" fill="#636366" />
+                        <circle cx="340" cy="115" r="22" fill="#a2a2a7" />
+                        <path d="M310 185 C310 145, 370 145, 370 185 Z" fill="#7c7c80" />
+                    </svg>
+                </div>
+
+                <div class="md:col-span-5 p-8 flex flex-col justify-center items-start">
+                    <h3 class="text-2xl font-bold text-[#1d1d1f] tracking-tight leading-tight mb-3">
+                        Discover opportunities in Machine Learning.
+                    </h3>
+                    <p class="text-[14px] leading-relaxed text-[#6e6e73] mb-6">
+                        Our research in machine learning breaks new ground every day.
+                    </p>
+                    <a href="#" class="px-6 py-2.5 bg-[#0066cc] hover:bg-[#004499] text-white rounded-full text-xs font-semibold tracking-wide transition-colors">
+                        Work with us
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- GLOBAL FOOTER -->
+    <footer class="bg-[#f5f5f7] border-t border-[#e5e5ea] py-8 text-xs text-[#6e6e73]">
+        <div class="max-w-[980px] mx-auto px-4 sm:px-6 flex flex-col space-y-4">
+            <div class="flex items-center space-x-2 text-[#6e6e73]">
+                <a href="#" class="hover:underline">Machine Learning Research</a>
+                <span>&gt;</span>
+                <span class="text-[#1d1d1f]">FastVLM: Efficient Vision Encoding</span>
+            </div>
+            <div class="pt-4 border-t border-[#d2d2d7] flex flex-col sm:flex-row justify-between items-center text-[11px] space-y-2 sm:space-y-0">
+                <div>Copyright © 2026 Apple Inc. All rights reserved.</div>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:underline">Privacy Policy</a>
+                    <a href="#" class="hover:underline">Terms of Use</a>
+                    <a href="#" class="hover:underline">Sales Policy</a>
+                    <a href="#" class="hover:underline">Legal</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="toast-msg fixed bottom-6 right-6 bg-[#1d1d1f] text-white px-5 py-3 rounded-xl border border-gray-700 shadow-2xl z-50 flex items-center space-x-3">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+        <span id="toast-text" class="text-xs font-semibold">Copied to clipboard</span>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Share Link Button
+        document.getElementById('share-btn').addEventListener('click', () => {
+            const textarea = document.createElement('textarea');
+            textarea.value = window.location.href;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast('Link copied to clipboard!');
+        });
+
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scroll-progress').style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>
