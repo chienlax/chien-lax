@@ -18,6 +18,13 @@ bundle exec jekyll serve   # http://localhost:4000/chien-lax/
 bundle exec jekyll build
 ```
 
+`Gemfile.lock` is not committed. The CI runner resolves the gems itself, which
+is what `ruby/setup-ruby` with `bundler-cache: true` does when it finds no
+lockfile. Commit one only if it was generated on Linux: a lockfile written by
+the Windows Ruby lists no `x86_64-linux` variants of `ffi`,
+`google-protobuf`, or `sass-embedded`, and its `CHECKSUMS` entries come out
+empty, either of which fails the build under frozen mode.
+
 ## Git
 
 When I ask you to commit and push changes to the remote, NEVER add a "Co-authored-by" line to the commit message.
@@ -47,10 +54,14 @@ below it the contents list when the article has `<h2>` headings.
 `default.html` decides that server-side with `show_toc`, which also controls
 the header's rail button.
 
-The rail must stay visible even where `ui.js` finds no headings and sets
-`display:none` on it inline; `site.css` overrides that with `!important` above
-1280px. Below 1280px the rail is a drawer, reachable only where there are
-headings — the same as the old sidebar, which also hid on a phone.
+`ui.js` sets `display:none` on the rail inline when it finds no headings, and
+an inline style outranks both the kit's 1280px rule and `.toc--drawer`. Two
+`!important` rules in `site.css` put it back: one above 1280px, one for the
+open drawer. The rail button renders at every width, so the author card is
+reachable on a phone.
+
+The header nav also stays in the bar at every width — the kit hides it below
+1024px, which is right for a five-item section nav and wrong for one link.
 
 ### Hero front matter
 

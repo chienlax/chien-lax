@@ -256,6 +256,19 @@
     display: block !important;
   }
 }
+/* Below 1280px the rail is a drawer. ui.js sets display:none inline on a page
+   with no headings, and an inline style outranks .toc--drawer's display:block,
+   so the drawer would open invisible. This puts it back. */
+.toc[data-toc].toc--drawer {
+  display: block !important;
+}
+
+/* The kit hides the section nav below 1024px because a five-item nav wraps and
+   breaks the 52px bar. This site has one link, so it stays in the bar at every
+   width. Past three links, delete this rule and let the drawer carry them. */
+.glass-header__nav {
+  display: flex;
+}
 
 .brand-logo {
   width: 28px;
