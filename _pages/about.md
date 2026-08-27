@@ -2,7 +2,7 @@
 layout: single
 title: "about me"
 permalink: /about/
-author_profile: true
+eyebrow: "About"
 ---
 
 Hello! I'm **Quang Chien** (i call myself david when i have conversation with myself in my head), and this is my personal website (yay).

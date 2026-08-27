@@ -1,29 +1,14 @@
 # Site Settings
-theme                    : "minimal-mistakes-jekyll"
-minimal_mistakes_skin    : "catppuccin-latte"
-
 locale                   : "en-US"
 title                    : "sleeping, on the go"
 title_separator          : "-"
 name                     : "sleeping, on the go"
 description              : "Personal website of Quang Chien."
+logo                     : "/assets/images/blog-photo.JPG"
 url                      : "https://chienlax.github.io"
 baseurl                  : "/chien-lax"
 repository               : "chienlax/chien-lax"
-teaser                   : "/assets/images/blog-photo.JPG"
-logo                     : "/assets/images/blog-photo.JPG"
 words_per_minute         : 150
-
-# Search
-search                   : false
-
-# SEO
-google_site_verification :
-bing_site_verification   :
-
-# Analytics
-analytics:
-  provider               : false
 
 # Site Author
 author:
@@ -32,53 +17,31 @@ author:
   bio              : "wannabe researcher, i am trying my best tho."
   location         : "Ha Noi, Viet Nam"
   email            : "chienlax.work@gmail.com"
-  links:
-    - label: "Email"
-      icon: "fas fa-fw fa-square-envelope"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-
-# Site Footer
-footer:
-  links: []
+  github           : "chienlax"
 
 # Reading Files
 include:
-  - .htaccess
   - _pages
 exclude:
-  - "*.sublime-project"
-  - "*.sublime-workspace"
+  - .claude
+  - .history
+  - docs
+  - essay-1
   - vendor
-  - .asset-cache
-  - .bundle
-  - .jekyll-assets-cache
-  - .sass-cache
-  - Capfile
-  - CHANGELOG
-  - config
   - Gemfile
-  - Gruntfile.js
-  - gulpfile.js
-  - LICENSE
-  - log
-  - node_modules
-  - README
-  - tmp
+  - Gemfile.lock
+  - README.md
 keep_files:
   - .git
-  - .svn
 encoding: "utf-8"
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 
-
 # Conversion
 markdown: kramdown
-highlighter: rouge
+highlighter: false
 lsi: false
 excerpt_separator: "\n\n"
 incremental: false
-
 
 # Markdown Processing
 kramdown:
@@ -87,76 +50,22 @@ kramdown:
   auto_ids: true
   footnote_nr: 1
   entity_output: as_char
-  toc_levels: 1..6
   smart_quotes: lsquo,rsquo,ldquo,rdquo
-  enable_coderay: false
-
-
-# Sass/SCSS
-sass:
-  sass_dir: _sass
-  style: compressed
-  quiet_deps: true
-  silence_deprecations:
-    - import
-    - global-builtin
-    - color-functions
-    - slash-div
-    - if-function
-
+  syntax_highlighter: none
 
 # Outputting
 permalink: /:categories/:title/
 timezone: Asia/Ho_Chi_Minh
 
-
-# Pagination (jekyll-paginate v1)
-paginate: 5
-paginate_path: /page:num/
-
-
 # Plugins
 plugins:
-  - jekyll-paginate
   - jekyll-sitemap
-  - jekyll-gist
   - jekyll-feed
-  - jekyll-include-cache
-
-# mimic GitHub Pages with --safe
-whitelist:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jekyll-feed
-  - jekyll-include-cache
-
-
-# Archives
-category_archive:
-  type: liquid
-  path: /categories/
-tag_archive:
-  type: liquid
-  path: /tags/
-
-
-# HTML Compression
-compress_html:
-  clippings: all
-  ignore:
-    envs: development
-
 
 # Defaults
 defaults:
-  # _posts
   - scope:
       path: ""
       type: posts
     values:
       layout: single
-      author_profile: true
-      read_time: true
-      share: false
-      related: false

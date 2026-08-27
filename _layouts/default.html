@@ -1,0 +1,185 @@
+{%- comment -%}
+  The left rail always carries the author card, so it always renders. The
+  contents list inside it appears only for an article that has H2s, and the
+  header's rail button follows the same test: with no headings there is
+  nothing to jump to.
+{%- endcomment -%}
+{%- assign show_toc = false -%}
+{%- if content contains "data-toc-root" and content contains "<h2" -%}
+  {%- assign show_toc = true -%}
+{%- endif -%}
+<!DOCTYPE html>
+<html lang="{{ site.locale | default: 'en-US' | slice: 0, 2 }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{% if page.title %}{{ page.title }} {{ site.title_separator }} {% endif %}{{ site.title }}</title>
+<meta name="description" content="{{ page.dek | default: page.excerpt | default: site.description | strip_html | normalize_whitespace | truncate: 160 }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+{% feed_meta %}
+
+<!-- Resolve the theme before first paint. Without this the page flashes
+     light before the stored dark choice applies. -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('ui-design-theme');
+    if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
+<link rel="stylesheet" href="{{ '/assets/css/ui.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+
+{%- if page.math %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+{%- endif %}
+</head>
+
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="glass-header">
+  <div class="glass-header__inner">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      {%- if show_toc %}
+      <button class="icon-btn toc-toggle" type="button" data-toc-toggle aria-expanded="false" aria-label="Show contents">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h10"/>
+        </svg>
+      </button>
+      {%- endif %}
+      <a class="glass-header__brand" href="{{ '/' | relative_url }}">
+        {%- if site.logo %}<img class="brand-logo" src="{{ site.logo | relative_url }}" alt="" width="28" height="28">{% endif %}
+        <span>{{ site.title }}</span>
+      </a>
+    </div>
+
+    <nav class="glass-header__nav" aria-label="Site">
+      {%- for link in site.data.navigation.main %}
+      <a href="{{ link.url | relative_url }}"{% if page.url == link.url %} aria-current="true"{% endif %}>{{ link.title }}</a>
+      {%- endfor %}
+    </nav>
+
+    <div class="glass-header__actions">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch theme" aria-pressed="false">
+        <svg data-icon-moon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg data-icon-sun viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="progress-bar" data-progress role="presentation"></div>
+
+<aside class="toc scroll-hidden" data-toc aria-label="Author and contents">
+  <div class="author-card">
+    {%- if site.author.avatar %}
+    <img class="author-card__avatar" src="{{ site.author.avatar | relative_url }}" alt="{{ site.author.name }}" width="120" height="120">
+    {%- endif %}
+    <p class="author-card__name">{{ site.author.name }}</p>
+    {%- if site.author.bio %}<p class="author-card__bio">{{ site.author.bio }}</p>{% endif %}
+    <ul class="author-card__links">
+      {%- if site.author.location %}
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>{{ site.author.location }}</span>
+      </li>
+      {%- endif %}
+      {%- if site.author.email %}
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+        <a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a>
+      </li>
+      {%- endif %}
+      {%- if site.author.github %}
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        <a href="https://github.com/{{ site.author.github }}">{{ site.author.github }}</a>
+      </li>
+      {%- endif %}
+    </ul>
+  </div>
+
+  {%- if show_toc %}
+  <div class="toc__label">On this page</div>
+  <div data-toc-body></div>
+  {%- endif %}
+</aside>
+
+<div id="top"></div>
+<section class="hero">
+  <div class="prose-col">
+    {%- assign eyebrow = page.eyebrow | default: page.categories.first %}
+    {%- if eyebrow %}
+    <p class="hero__eyebrow">{{ eyebrow }}</p>
+    {%- endif %}
+    <h1 class="hero__title">{{ page.title | default: site.title }}</h1>
+    {%- if page.dek %}
+    <p class="hero__dek">{{ page.dek }}</p>
+    {%- endif %}
+    {%- if page.date or page.tags.size > 0 %}
+    <div class="hero__rule"></div>
+    <div class="hero__meta">
+      {%- if page.date %}
+      <span class="chip">{{ page.date | date: "%-d %B %Y" }}</span>
+      <span class="chip">{{ content | number_of_words | divided_by: site.words_per_minute | plus: 1 }} min read</span>
+      {%- endif %}
+      {%- for tag in page.tags %}
+      <span class="chip">{{ tag }}</span>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </div>
+</section>
+
+<main id="content">
+  {{ content }}
+
+  <footer class="site-footer">
+    &copy; {{ site.time | date: "%Y" }} {{ site.author.name }}.
+    <a href="{{ '/feed.xml' | relative_url }}">Feed</a>
+  </footer>
+</main>
+
+<button class="to-top" type="button" data-to-top aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<div class="toast" data-toast role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+  </svg>
+  <span data-toast-text></span>
+</div>
+
+<script src="{{ '/assets/js/ui.js' | relative_url }}"></script>
+
+{%- if page.math %}
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  if (!window.renderMathInElement) return;
+  window.renderMathInElement(document.body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false }
+    ],
+    ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+    throwOnError: false
+  });
+});
+</script>
+{%- endif %}
+</body>
+</html>
