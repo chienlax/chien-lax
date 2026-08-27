@@ -346,3 +346,18 @@
   margin: 0;
   font-size: var(--text-h3);
 }
+
+/* --- 7. Page gutter below the rail breakpoint -------------------------
+   The kit gives main and .hero no horizontal padding: it assumes the 730px
+   column always has slack beside it, which stops being true on a phone.
+   Without this the only space at the edge is the browser's default 8px body
+   margin, which also keeps the hero band from reaching the viewport edge. */
+body {
+  margin: 0;
+}
+@media (max-width: 1279px) {
+  main,
+  .hero {
+    padding-inline: 1.25rem;
+  }
+}

@@ -87,7 +87,10 @@ and the same for the script. After copying the script, re-apply the one
 deviation above — a plain copy turns the highlighter back on.
 
 `site.css` carries the self-hosted `@font-face` rules, the markdown bridge, the
-post-card rules, and the footer. The bridge exists because kramdown emits bare
+post-card rules, the footer, and the page gutter. The gutter exists because the
+kit gives `main` and `.hero` no horizontal padding below 1280px — it assumes
+the 730px column always has slack beside it — so on a phone the only edge space
+was the browser's default 8px `body` margin. The bridge exists because kramdown emits bare
 `<img>`, `<table>`, and `<pre>`, and the kit styles only `.figure img`,
 `.table-wrap table`, and `.code-block pre`. Without it a post image renders at
 its natural width and overflows the page.
