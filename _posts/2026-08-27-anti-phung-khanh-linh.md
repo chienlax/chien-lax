@@ -8,7 +8,7 @@
 
 Có lẽ chúng ta đã không còn xa lạ gì với "Dead Internet Theory", khi mà Internet được vận hành bởi bot (không ý tôi là mấy cái máy tự động ấy), bot comment, bot tương tác, content AI, thì dạo gần đây tôi đã tìm được chút niềm vui về những kỷ niệm xưa cũ trong nhóm "anti Phùng Khánh Linh".
 
-![post-bach-tuoc-hoa-nguoi]({{ site.baseurl }}/assets/images/anti-pkl/post-bach-tuoc-hoa-nguoi.webp)
+![post-bach-tuoc-hoa-nguoi]({{ site.baseurl }}/assets/images/anti-pkl/post-bach-tuoc-hoa-nguoi.jpg)
 
 Ai hiểu sẽ hiểu, đây là văn hóa fanti từ Twitter với kiểu chế meme rất mất dạy và offensive, nhưng nó vui, và tôi sẽ không nói có thể là cười 30p lướt cái group này để lưu tư liệu hiếm, vì biết đâu đấy, 1 hay 2 tháng nữa, nó sẽ biến mất hoặc hóa vào hư vô.
 
@@ -18,11 +18,11 @@ Nổi bật nhất trong ký ức của tôi là Động Sục, cái ổ meme ng
 
 "anti Phùng Khánh Linh" gợi cho tôi một cảm giác như vậy. Mấy cái meme chị Linh không phải không có từ trước, chính cách chị Linh marketing thời GMVN cũng là meme hóa bản thân để tạo hình ảnh gần gũi hơn với khán giả, và nó thành công đến mức đưa GMVN thành một trong những album lọt top liên tục trong năm 2025, 2026. Với một người stream "Em Đau" không dưới 700 lần từ lúc nó ra mắt, đây có lẽ là album chất lượng bậc nhất tôi từng trải nghiệm. Không chỉ ở chất lượng nhạc mà còn ở cách quảng bá album, tour và để hoàn thiện cái mảnh ghép cuối cùng tôi tưởng sẽ không còn được thấy nữa, một ổ (vạn) con fanti trên Facebook.
 
-![post-linh-ngoi-tren-ghe]({{ site.baseurl }}/assets/images/anti-pkl/post-linh-ngoi-tren-ghe.webp)
+![post-linh-ngoi-tren-ghe]({{ site.baseurl }}/assets/images/anti-pkl/post-linh-ngoi-tren-ghe.jpg)
 
 *Không phải tự dưng có cái ref này ...*
 
-![tien-rang-pkl]({{ site.baseurl }}/assets/images/anti-pkl/post-tien-rang-pkl.webp)
+![tien-rang-pkl]({{ site.baseurl }}/assets/images/anti-pkl/post-tien-rang-pkl.jpg)
 
 *Giữa một vạn cái ảnh AI câu tương tác ảo trên mạng, đâu đó vẫn có những con người làm những con meme low poly mà cười nổ lz.*
 
@@ -36,11 +36,11 @@ Có ai nhớ [Gangnam Style](https://www.youtube.com/watch?v=9bZkp7q19f0) hay m�
 
 Tôi đủ terminally online để chứng kiến văn hóa chung trên mạng nổ ra rồi lụi tàn. Tôi đủ già (tôi mới 22 tuổi) để nhìn những gì đang xảy ra lặp lại những kỉ niệm huy hoàng về một thời đã mất. Và tôi ước chúng ta có thể có lại cái internet đó, một cộng đồng ảo nào đó mang lại niềm vui cho mọi người như cái group anti Phùng Khánh Linh đang làm.
 
-![linh-cao-quy-phi-nuong-nuong]({{ site.baseurl }}/assets/images/anti-pkl/post-linh-cao-quy-phi-nuong-nuong.webp)
+![linh-cao-quy-phi-nuong-nuong]({{ site.baseurl }}/assets/images/anti-pkl/post-linh-cao-quy-phi-nuong-nuong.jpg)
 
-![mau-dam-xinh]({{ site.baseurl }}/assets/images/anti-pkl/post-mau-dam-xinh.webp)
+![mau-dam-xinh]({{ site.baseurl }}/assets/images/anti-pkl/post-mau-dam-xinh.jpg)
 
-![alt text]({{ site.baseurl }}/assets/images/anti-pkl/post-linh-sakura-chan.webp)
+![alt text]({{ site.baseurl }}/assets/images/anti-pkl/post-linh-sakura-chan.jpg)
 
 *Một vài post gần đây có thể là cười nổ lz*
 
